@@ -6,8 +6,8 @@ import NavBar from '@/component/NavBar';
 
 export default function Home() {
   const [gameFormula, setGameFormula] = useState('Simple');
-  const [betType, setBetType] = useState('Poto');
-  const [selectedNumbers, setSelectedNumbers] = useState([]);
+  const [betType, setBetType] = useState<keyof typeof betTypes>('Poto');
+  const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [betAmount, setBetAmount] = useState(100);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showResults, setShowResults] = useState(false);
@@ -45,7 +45,19 @@ export default function Home() {
 
   const allNumbers = generateNumbers();
 
-  const handleNumberClick = (number) => {
+  interface BetType {
+    slots: number;
+    description: string;
+  }
+
+  interface Draw {
+    id: number;
+    name: string;
+    time: string;
+    icon: string;
+  }
+
+  const handleNumberClick = (number: number) => {
     if (selectedNumbers.includes(number)) {
       setSelectedNumbers(selectedNumbers.filter(num => num !== number));
     } else {
@@ -61,7 +73,7 @@ export default function Home() {
 
   const handleFlashClick = () => {
     const maxSlots = betTypes[betType].slots;
-    const randomNumbers = [];
+    const randomNumbers: number[] = [];
     while (randomNumbers.length < maxSlots) {
       const randomNum = Math.floor(Math.random() * 90) + 1;
       if (!randomNumbers.includes(randomNum)) {
@@ -71,7 +83,9 @@ export default function Home() {
     setSelectedNumbers(randomNumbers);
   };
 
-  const handleSubmit = (e) => {
+  interface SubmitEvent extends React.FormEvent<HTMLFormElement> {}
+
+  const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
     setShowResults(true);
     // Ici vous pouvez ajouter la logique pour traiter la soumission
@@ -156,7 +170,7 @@ export default function Home() {
                 className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
                 value={betType}
                 onChange={(e) => {
-                  setBetType(e.target.value);
+                  setBetType(e.target.value as keyof typeof betTypes);
                   setSelectedNumbers([]);
                 }}
               >
@@ -312,17 +326,19 @@ export default function Home() {
               <img src="/placeholder-moov.png" alt="Moov" className="h-8" />
             </div>
 
-            <button 
-              onClick={handleSubmit}
-              className={`w-full py-3 rounded text-center ${
-                selectedNumbers.length === betTypes[betType].slots && phoneNumber
-                  ? 'bg-green-600 text-white' 
-                  : 'bg-gray-300 text-gray-600'
-              }`}
-              disabled={selectedNumbers.length !== betTypes[betType].slots || !phoneNumber}
-            >
-              Valider
-            </button>
+            <form onSubmit={handleSubmit}>
+              <button 
+                type="submit"
+                className={`w-full py-3 rounded text-center ${
+                  selectedNumbers.length === betTypes[betType].slots && phoneNumber
+                    ? 'bg-green-600 text-white' 
+                    : 'bg-gray-300 text-gray-600'
+                }`}
+                disabled={selectedNumbers.length !== betTypes[betType].slots || !phoneNumber}
+              >
+                Valider
+              </button>
+            </form>
           </div>
         </div>
       </main>
