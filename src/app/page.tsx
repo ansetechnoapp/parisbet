@@ -102,7 +102,7 @@ export default function Home() {
       {/* Bannière d'avertissement */}
       <div className="bg-gradient-to-r from-green-800 to-green-900 text-white text-xs md:text-sm py-2 md:py-3 px-2 md:px-4 flex justify-center items-center">
         <div className="flex-1 text-center font-medium tracking-wide">
-          LES JEUX D'ARGENT ET DE HASARD SONT INTERDITS AUX MINEURS
+          LES JEUX D&apos;ARGENT ET DE HASARD SONT INTERDITS AUX MINEURS
         </div>
         <button className="rounded-full w-5 h-5 md:w-6 md:h-6 bg-green-700 hover:bg-green-600 transition-colors text-white flex items-center justify-center">
           ×
@@ -284,7 +284,7 @@ export default function Home() {
           <div className="mb-8">
             <h2 className="font-medium mb-4">Place un pari multiple</h2>
             <p className="text-sm text-gray-600 mb-4">
-              Tu peux créer jusqu'à 10 combinaisons par ticket
+              Tu peux créer jusqu&apos;à 10 combinaisons par ticket
             </p>
             <button className="flex items-center bg-green-500 text-white px-4 py-2 rounded">
               <span className="mr-2">+</span> Ajouter un pari
