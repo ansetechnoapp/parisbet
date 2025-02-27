@@ -47,7 +47,7 @@ export default function HowToPlay() {
               <ul className="list-disc list-inside space-y-2 text-gray-600">
                 <li>Choisissez une formule de jeu (Simple ou Perm)</li>
                 <li>Sélectionnez votre type de pari (Poto, Tout chaud, etc.)</li>
-                <li>Entrez vos numéros ou utilisez l'option Flash</li>
+                <li>Entrez vos numéros ou utilisez l&apos;option Flash</li>
                 <li>Définissez votre mise (minimum 100 FCFA)</li>
                 <li>Validez votre ticket avec votre numéro de téléphone</li>
               </ul>

@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import Head from 'next/head';
-import Image from 'next/image';
 import NavBar from '@/component/NavBar';
 
 export default function Home() {

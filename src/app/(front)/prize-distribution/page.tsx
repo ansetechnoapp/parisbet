@@ -111,7 +111,7 @@ export default function PrizeDistribution() {
                 <div className="text-3xl mb-2">⚡</div>
                 <h3 className="font-medium text-gray-800 mb-2">Sans frais</h3>
                 <p className="text-sm text-gray-600">
-                  Aucun frais n'est prélevé sur vos gains. Vous recevez 100% de vos gains.
+                  Aucun frais n&apos;est prélevé sur vos gains. Vous recevez 100% de vos gains.
                 </p>
               </div>
             </div>

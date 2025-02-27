@@ -34,7 +34,7 @@ export default function Results() {
                 ))}
               </div>
               <div className="text-sm text-gray-600">
-                Prochain tirage: Aujourd'hui à 18H
+                Prochain tirage: Aujourd&apos;hui à 18H
               </div>
             </div>
           </div>
