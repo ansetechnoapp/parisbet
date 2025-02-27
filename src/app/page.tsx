@@ -74,7 +74,7 @@ export default function Home() {
     setSelectedNumbers(randomNumbers);
   };
 
-  interface SubmitEvent extends React.FormEvent<HTMLFormElement> {}
+  // interface SubmitEvent extends React.FormEvent<HTMLFormElement> {}
 
   // const handleSubmit = (e: SubmitEvent) => {
   //   e.preventDefault();
