@@ -9,7 +9,7 @@ export default function Home() {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [betAmount, setBetAmount] = useState(100);
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [showResults, setShowResults] = useState(false);
+  // const [showResults, setShowResults] = useState(false);
 
   // Types de paris disponibles et leurs configurations
   const betTypes = {
@@ -33,28 +33,20 @@ export default function Home() {
 
   const [selectedDraw, setSelectedDraw] = useState(availableDraws[0]);
 
-  // Générer les numéros de 1 à 90
-  const generateNumbers = () => {
-    const numbers = [];
-    for (let i = 1; i <= 90; i++) {
-      numbers.push(i);
-    }
-    return numbers;
-  };
 
-  const allNumbers = generateNumbers();
 
-  interface BetType {
-    slots: number;
-    description: string;
-  }
 
-  interface Draw {
-    id: number;
-    name: string;
-    time: string;
-    icon: string;
-  }
+  // interface BetType {
+  //   slots: number;
+  //   description: string;
+  // }
+
+  // interface Draw {
+  //   id: number;
+  //   name: string;
+  //   time: string;
+  //   icon: string;
+  // }
 
   const handleNumberClick = (number: number) => {
     if (selectedNumbers.includes(number)) {
@@ -84,11 +76,11 @@ export default function Home() {
 
   interface SubmitEvent extends React.FormEvent<HTMLFormElement> {}
 
-  const handleSubmit = (e: SubmitEvent) => {
-    e.preventDefault();
-    setShowResults(true);
-    // Ici vous pouvez ajouter la logique pour traiter la soumission
-  };
+  // const handleSubmit = (e: SubmitEvent) => {
+  //   e.preventDefault();
+  //   setShowResults(true);
+  //   // Ici vous pouvez ajouter la logique pour traiter la soumission
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50">
@@ -325,7 +317,8 @@ export default function Home() {
               <img src="/placeholder-moov.png" alt="Moov" className="h-8" />
             </div>
 
-            <form onSubmit={handleSubmit}>
+            <form >
+            {/* <form onSubmit={handleSubmit}> */}
               <button 
                 type="submit"
                 className={`w-full py-3 rounded text-center ${
