@@ -1,15 +1,17 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import NavBar from '@/component/NavBar';
 
 export default function Home() {
-  const [gameFormula, setGameFormula] = useState('Simple');
   const [betType, setBetType] = useState<keyof typeof betTypes>('Poto');
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [betAmount, setBetAmount] = useState(100);
   const [phoneNumber, setPhoneNumber] = useState('');
-  // const [showResults, setShowResults] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [customNumber, setCustomNumber] = useState('');
+  const [directEntryMode, setDirectEntryMode] = useState(true);
+  const [directInputNumbers, setDirectInputNumbers] = useState<string[]>([]);
 
   // Types de paris disponibles et leurs configurations
   const betTypes = {
@@ -18,6 +20,7 @@ export default function Home() {
     '3 Nape': { slots: 3, description: 'Choisissez trois numéros parmi les cinq tirés' },
     '4 Nape': { slots: 4, description: 'Choisissez quatre numéros parmi les cinq tirés' },
     '5 Nape': { slots: 5, description: 'Choisissez exactement les cinq numéros tirés' },
+    'Perm': { slots: 5, description: 'Choisissez cinq numéros et pariez sur toutes les combinaisons possibles' },
   };
 
   // Tirages disponibles
@@ -33,21 +36,6 @@ export default function Home() {
 
   const [selectedDraw, setSelectedDraw] = useState(availableDraws[0]);
 
-
-
-
-  // interface BetType {
-  //   slots: number;
-  //   description: string;
-  // }
-
-  // interface Draw {
-  //   id: number;
-  //   name: string;
-  //   time: string;
-  //   icon: string;
-  // }
-
   const handleNumberClick = (number: number) => {
     if (selectedNumbers.includes(number)) {
       setSelectedNumbers(selectedNumbers.filter(num => num !== number));
@@ -58,8 +46,68 @@ export default function Home() {
     }
   };
 
+  const handleCustomNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomNumber(e.target.value);
+  };
+
+  const handleDirectInputChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const newInputs = [...directInputNumbers];
+    newInputs[index] = e.target.value;
+    setDirectInputNumbers(newInputs);
+  };
+
+  const handleDirectInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const number = parseInt(directInputNumbers[index]);
+      if (!isNaN(number) && number >= 1 && number <= 90) {
+        const newSelectedNumbers = [...selectedNumbers];
+        newSelectedNumbers[index] = number;
+        setSelectedNumbers(newSelectedNumbers);
+        
+        // Clear input field
+        const newInputs = [...directInputNumbers];
+        newInputs[index] = '';
+        setDirectInputNumbers(newInputs);
+        
+        // Move focus to next input if available
+        if (index < betTypes[betType].slots - 1) {
+          const nextInput = document.getElementById(`direct-input-${index + 1}`);
+          if (nextInput) nextInput.focus();
+        }
+      }
+    }
+  };
+
+  const handleCustomNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const number = parseInt(customNumber);
+      if (!isNaN(number) && number >= 1 && number <= 90 && !selectedNumbers.includes(number)) {
+        const newSelectedNumbers = [...selectedNumbers];
+        newSelectedNumbers[index] = number;
+        setSelectedNumbers(newSelectedNumbers);
+        setCustomNumber('');
+        setEditingIndex(null);
+      }
+    } else if (e.key === 'Escape') {
+      setEditingIndex(null);
+      setCustomNumber('');
+    }
+  };
+
+  const startEditing = (index: number) => {
+    if (directEntryMode) {
+      setEditingIndex(index);
+      setCustomNumber(selectedNumbers[index] ? selectedNumbers[index].toString() : '');
+    }
+  };
+
   const clearSelection = () => {
     setSelectedNumbers([]);
+    setEditingIndex(null);
+    setCustomNumber('');
+    setDirectInputNumbers(Array(betTypes[betType].slots).fill(''));
   };
 
   const handleFlashClick = () => {
@@ -74,13 +122,10 @@ export default function Home() {
     setSelectedNumbers(randomNumbers);
   };
 
-  // interface SubmitEvent extends React.FormEvent<HTMLFormElement> {}
-
-  // const handleSubmit = (e: SubmitEvent) => {
-  //   e.preventDefault();
-  //   setShowResults(true);
-  //   // Ici vous pouvez ajouter la logique pour traiter la soumission
-  // };
+  useEffect(() => {
+    // Initialize empty inputs when bet type changes
+    setDirectInputNumbers(Array(betTypes[betType].slots).fill(''));
+  }, [betType]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50">
@@ -135,111 +180,11 @@ export default function Home() {
               ))}
             </div>
           </div>
-
-          {/* Formule de jeu et type de pari */}
-          <div className="grid grid-cols-2 gap-6 mb-8">
-            <div>
-              <div className="flex items-center mb-3">
-                <h2 className="font-semibold text-gray-800">FORMULE DE JEU</h2>
-                <span className="ml-2 text-gray-400 hover:text-green-600 cursor-help transition-colors">ⓘ</span>
-              </div>
-              <select 
-                className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
-                value={gameFormula}
-                onChange={(e) => setGameFormula(e.target.value)}
-              >
-                <option value="Simple">Simple</option>
-                <option value="Perm">Perm</option>
-              </select>
-            </div>
-            <div>
-              <div className="flex items-center mb-3">
-                <h2 className="font-semibold text-gray-800">TYPE DE PARI</h2>
-                <span className="ml-2 text-gray-400 hover:text-green-600 cursor-help transition-colors">ⓘ</span>
-              </div>
-              <select 
-                className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
-                value={betType}
-                onChange={(e) => {
-                  setBetType(e.target.value as keyof typeof betTypes);
-                  setSelectedNumbers([]);
-                }}
-              >
-                {Object.keys(betTypes).map((type) => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Sélection des numéros */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center">
-                <h2 className="font-medium">ENTRE TES NUMÉROS</h2>
-                <span className="ml-2 text-gray-500 rounded-full border border-gray-300 w-5 h-5 flex items-center justify-center text-xs">i</span>
-              </div>
-              <button className="text-sm text-gray-600">Mode grille</button>
-            </div>
-            <p className="text-sm text-gray-600 mb-4">
-              Saisis {betTypes[betType].slots} numéros entre 1 et 90
-            </p>
-
-            <div className="flex space-x-2 mb-4">
-              <button 
-                onClick={handleFlashClick}
-                className="flex items-center bg-white border border-gray-300 rounded px-3 py-1"
-              >
-                <span className="text-yellow-500 mr-1">⚡</span> Flash
-              </button>
-              <button 
-                onClick={clearSelection}
-                className="flex items-center bg-white border border-gray-300 rounded px-3 py-1"
-              >
-                <span className="mr-1">🗑️</span> Effacer
-              </button>
-            </div>
-
-            {/* Affichage des numéros sélectionnés */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {[...Array(betTypes[betType].slots)].map((_, index) => (
-                <div 
-                  key={index} 
-                  className={`w-12 h-12 rounded flex items-center justify-center border ${
-                    selectedNumbers[index] ? 'border-green-600 bg-white text-green-600' : 'border-gray-300 bg-gray-200 text-gray-400'
-                  }`}
-                >
-                  {selectedNumbers[index] || 'X'}
-                </div>
-              ))}
-            </div>
-
-            {/* Grille de numéros complète - simplifiée pour l'exemple */}
-            <div className="grid grid-cols-6 md:grid-cols-9 gap-2 mb-6">
-              {[...Array(90)].map((_, index) => {
-                const number = index + 1;
-                return (
-                  <button
-                    key={number}
-                    onClick={() => handleNumberClick(number)}
-                    className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-base md:text-lg font-medium transition-all ${
-                      selectedNumbers.includes(number) 
-                        ? 'bg-green-600 text-white shadow-lg shadow-green-200 transform scale-105' 
-                        : 'bg-gray-50 hover:bg-green-50 text-gray-700'
-                    }`}
-                  >
-                    {number}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Montant du pari */}
+         {/* Montant du pari */}
           <div className="mb-6">
             <h2 className="font-medium mb-2">TON PARI</h2>
             <div className="flex flex-wrap gap-2 mb-4">
-              {[100, 200, 500, 1000, 2000].map((amount) => (
+              {[50,100, 200, 500, 1000, 2000].map((amount) => (
                 <button
                   key={amount}
                   onClick={() => setBetAmount(amount)}
@@ -270,6 +215,153 @@ export default function Home() {
               (Multiple de 10, entre 10 et 100.000 Fcfa)
             </div>
           </div>
+          {/* Type de pari */}
+          <div className="grid grid-cols-1 gap-6 mb-8">
+            <div>
+              <div className="flex items-center mb-3">
+                <h2 className="font-semibold text-gray-800">TYPE DE PARI</h2>
+                <span className="ml-2 text-gray-400 hover:text-green-600 cursor-help transition-colors">ⓘ</span>
+              </div>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {Object.keys(betTypes).map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      setBetType(type as keyof typeof betTypes);
+                      setSelectedNumbers([]);
+                    }}
+                    className={`px-3 py-1 md:px-4 md:py-2 text-sm md:text-base rounded-full ${
+                      betType === type 
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-white border border-gray-300'
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Sélection des numéros */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <h2 className="font-medium">ENTRE TES NUMÉROS</h2>
+                <span className="ml-2 text-gray-500 rounded-full border border-gray-300 w-5 h-5 flex items-center justify-center text-xs">i</span>
+              </div>
+              <button 
+                className={`px-3 py-1.5 rounded-lg border ${
+                  directEntryMode 
+                    ? 'bg-green-600 text-white border-green-700 shadow-sm' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                } text-sm font-medium transition-all duration-200 flex items-center`}
+                onClick={() => setDirectEntryMode(!directEntryMode)}
+              >
+                <span className="mr-1">{directEntryMode ? '✏️' : '✏️'}</span>
+                Saisie directe {directEntryMode ? '✓' : ''}
+              </button>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Saisis {betTypes[betType].slots} numéros entre 1 et 90
+            </p>
+
+            <div className="flex space-x-2 mb-4">
+              <button 
+                onClick={handleFlashClick}
+                className="flex items-center bg-white border border-gray-300 rounded px-3 py-1"
+              >
+                <span className="text-yellow-500 mr-1">⚡</span> Flash
+              </button>
+              <button 
+                onClick={clearSelection}
+                className="flex items-center bg-white border border-gray-300 rounded px-3 py-1"
+              >
+                <span className="mr-1">🗑️</span> Effacer
+              </button>
+            </div>
+
+            {/* Affichage des numéros sélectionnés ou interface de saisie directe */}
+            {directEntryMode ? (
+              <div className="bg-white p-3 rounded-lg border border-gray-200 mb-4">
+                <p className="text-sm text-gray-600 mb-1">Entrez directement vos numéros:</p>
+                <div className="flex flex-wrap gap-6">
+                  {[...Array(betTypes[betType].slots)].map((_, index) => (
+                    <div key={index} className="flex flex-col items-center">
+                      <label className="text-xs text-gray-500 mb-0.5">N°{index + 1}</label>
+                      <div className="relative w-full">
+                        <input
+                          id={`direct-input-${index}`}
+                          type="number"
+                          min="1"
+                          max="90"
+                          placeholder="1-90"
+                          value={directInputNumbers[index] || ''}
+                          onChange={(e) => handleDirectInputChange(e, index)}
+                          onKeyDown={(e) => handleDirectInputKeyDown(e, index)}
+                          className="w-full h-20 p-1 border border-gray-300 rounded-full text-center focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg font-medium"
+                        />
+                        {selectedNumbers[index] && (
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600">✓</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {[...Array(betTypes[betType].slots)].map((_, index) => (
+                  <div 
+                    key={index} 
+                    className={`w-12 h-12 rounded flex items-center justify-center border ${
+                      selectedNumbers[index] ? 'border-green-600 bg-white text-green-600' : 'border-gray-300 bg-gray-200 text-gray-400'
+                    } ${directEntryMode ? 'cursor-pointer' : ''}`}
+                    onClick={() => startEditing(index)}
+                  >
+                    {editingIndex === index ? (
+                      <input
+                        type="number"
+                        min="1"
+                        max="90"
+                        value={customNumber}
+                        onChange={handleCustomNumberChange}
+                        onKeyDown={(e) => handleCustomNumberKeyDown(e, index)}
+                        className="w-10 h-10 text-center outline-none border-none bg-transparent"
+                        autoFocus
+                      />
+                    ) : (
+                      selectedNumbers[index] || 'X'
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Grille de numéros complète - simplifiée pour l'exemple */}
+            {!directEntryMode && (
+              <div className="grid grid-cols-6 md:grid-cols-9 gap-2 mb-6">
+                {[...Array(90)].map((_, index) => {
+                  const number = index + 1;
+                  return (
+                    <button
+                      key={number}
+                      onClick={() => handleNumberClick(number)}
+                      className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-base md:text-lg font-medium transition-all ${
+                        selectedNumbers.includes(number) 
+                          ? 'bg-green-600 text-white shadow-lg shadow-green-200 transform scale-105' 
+                          : 'bg-gray-50 hover:bg-green-50 text-gray-700'
+                      }`}
+                    >
+                      {number}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+ 
 
           {/* Paris multiples */}
           <div className="mb-8">
