@@ -44,7 +44,7 @@ const BetTypeSelector: React.FC<BetTypeSelectorProps> = ({
                     <p>{explanation}</p>
                   </div>
                 ))}
-                <p className="mt-2 text-green-600">À savoir : les prix ne sont pas fixe, la mise minimale est de 50F donc la personne peut misé la somme qu'elle veut.</p>
+                <p className="mt-2 text-green-600">À savoir : les prix ne sont pas fixe, la mise minimale est de 50F donc la personne peut misé la somme qu&apos;elle veut.</p>
               </div>
             )}
           </div>
@@ -72,9 +72,8 @@ const BetTypeSelector: React.FC<BetTypeSelectorProps> = ({
                   onMouseLeave={() => setHoveredInfoType(null)}
                 />
                 {hoveredInfoType === type && (
-                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-[calc(100vw-2rem)] md:w-64 p-3 bg-white shadow-lg rounded-md text-xs text-gray-700 z-50">
-                    <div className="text-sm font-medium mb-1">{type}</div>
-                    <p>{betExplanations[type] || "Aucune explication"}</p>
+                  <div className="absolute left-1/2 bottom-full mb-2 w-64 p-2 bg-white shadow-lg rounded-md text-xs text-gray-700 z-50 -translate-x-1/2">
+                    {betExplanations[type] || "Aucune explication"}
                   </div>
                 )}
               </div>

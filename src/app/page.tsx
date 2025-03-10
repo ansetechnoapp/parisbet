@@ -173,7 +173,7 @@ export default function Home() {
 
           <BetTypeSelector 
             betType={betType}
-            setBetType={setBetType as (type: string) => void}
+            setBetType={setBetType as (type: string) => void} 
             betTypes={betTypes}
             betExplanations={betExplanations}
             setSelectedNumbers={setSelectedNumbers}

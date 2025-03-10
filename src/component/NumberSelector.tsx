@@ -54,10 +54,22 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
   handleFlashClick,
   clearSelection
 }) => {
+
+  
   const getTotalSlots = (type: string) => {
     return type === 'Perm' ? 30 : 5;
   };
 
+  const handleSomeEvent1 = () => {
+    setSelectedNumbers([1, 2, 3]);
+  };
+  const updateDirectInputNumbers = (newNumbers: string[]) => {
+    setDirectInputNumbers(newNumbers);
+  };
+  const handleSomeEvent = () => {
+    setEditingIndex(null);
+    setCustomNumber('');
+  };
   const totalSlots = getTotalSlots(betType);
   
   return (
@@ -91,7 +103,7 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
         Saisis {betTypes[betType].slots} numéros entre 1 et 90
       </p>
 
-      <div className="flex space-x-2 mb-4">
+      <div className="flex space-x-2 mb-4"> 
         <button 
           onClick={handleFlashClick}
           className="flex items-center bg-white border border-gray-300 rounded px-3 py-1"
