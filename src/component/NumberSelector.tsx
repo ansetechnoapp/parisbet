@@ -62,14 +62,12 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
 
   const handleSomeEvent1 = () => {
     setSelectedNumbers([1, 2, 3]);
-  };
-  const updateDirectInputNumbers = (newNumbers: string[]) => {
-    setDirectInputNumbers(newNumbers);
-  };
-  const handleSomeEvent = () => {
     setEditingIndex(null);
     setCustomNumber('');
+    setDirectInputNumbers(['1', '2', '3']);
   };
+
+
   const totalSlots = getTotalSlots(betType);
   
   return (
@@ -213,6 +211,8 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
           })}
         </div>
       )}
+
+      <button className='hidden' onClick={handleSomeEvent1}>Click me</button>
     </div>
   );
 };
