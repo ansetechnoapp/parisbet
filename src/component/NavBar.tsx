@@ -61,9 +61,9 @@ export default function NavBar() {
           </svg>
         </button>
 
-        <button className="hidden md:block bg-green-600 hover:bg-green-700 transition-colors text-white px-6 py-2 rounded-full font-medium shadow-lg shadow-green-200">
+        <Link href="/tickets" className="hidden md:block bg-green-600 hover:bg-green-700 transition-colors text-white px-6 py-2 rounded-full font-medium shadow-lg shadow-green-200">
           Mes tickets
-        </button>
+        </Link>
       </div>
 
       {/* Menu mobile */}
