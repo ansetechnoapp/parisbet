@@ -2,61 +2,26 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-
-interface Ticket {
-  id: string;
-  date: string;
-  type: string;
-  numbers: number[];
-  amount: number;
-  status: 'pending' | 'won' | 'lost';
-  winAmount?: number;
-}
+import { supabase, Ticket, getTickets } from '@/lib/supabase';
 
 export default function TicketListPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // Simulate fetching tickets from an API
-    const fetchTickets = async () => {
-      // In a real app, you would fetch from your backend
-      setTimeout(() => {
-        const mockTickets: Ticket[] = [
-          {
-            id: 'TCK-1284756',
-            date: '10/03/2025 14:30',
-            type: 'Poto',
-            numbers: [12, 34, 56, 78, 90],
-            amount: 500,
-            status: 'pending',
-          },
-          {
-            id: 'TCK-1284733',
-            date: '09/03/2025 16:45',
-            type: 'Tout chaud',
-            numbers: [5, 17, 23, 45, 67],
-            amount: 1000,
-            status: 'won',
-            winAmount: 70000,
-          },
-          {
-            id: 'TCK-1284701',
-            date: '08/03/2025 10:15',
-            type: '3 Nape',
-            numbers: [7, 18, 25],
-            amount: 200,
-            status: 'lost',
-          },
-        ];
-        
-        setTickets(mockTickets);
-        setLoading(false);
-      }, 1000);
-    };
-    
     fetchTickets();
   }, []);
+  
+  const fetchTickets = async () => {
+    try {
+      const data = await getTickets();
+      setTickets(data);
+    } catch (error) {
+      console.error('Error fetching tickets:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const getStatusColor = (status: string) => {
     switch(status) {
@@ -101,12 +66,12 @@ export default function TicketListPage() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
                     <div>
                       <div className="flex items-center space-x-2">
-                        <h3 className="text-lg font-semibold text-gray-800">{ticket.id}</h3>
+                        <h3 className="text-lg font-semibold text-gray-800">{ticket.ticket_number}</h3>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
                           {getStatusLabel(ticket.status)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-500 mt-1">{ticket.date}</p>
+                      <p className="text-sm text-gray-500 mt-1">{new Date(ticket.date).toLocaleString()}</p>
                     </div>
                     <div className="mt-2 md:mt-0">
                       <span className="text-xl font-bold text-green-600">{ticket.amount} Fcfa</span>
@@ -126,10 +91,10 @@ export default function TicketListPage() {
                         </div>
                       </div>
                       
-                      {ticket.status === 'won' && ticket.winAmount && (
+                      {ticket.status === 'won' && (
                         <div className="mt-4 md:mt-0 text-right">
                           <p className="text-sm text-gray-600">Gain:</p>
-                          <p className="text-xl font-bold text-green-600">{ticket.winAmount} Fcfa</p>
+                          <p className="text-xl font-bold text-green-600">{ticket.amount * 140} Fcfa</p>
                         </div>
                       )}
                     </div>

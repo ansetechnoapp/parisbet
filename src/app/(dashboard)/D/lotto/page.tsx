@@ -1,26 +1,34 @@
 'use client';
 
-import { useState } from 'react';
-
-interface LottoResult {
-  id: string;
-  drawTime: string;
-  drawDate: string;
-  numbers: number[];
-  type: 'Fortune 14H' | 'Fortune 18H';
-  status: 'pending' | 'completed';
-}
+import { useState, useEffect } from 'react';
+import { supabase, LottoResult, addLottoResult, getLottoResults, deleteLottoResult } from '@/lib/supabase';
 
 export default function LottoPage() {
   const [results, setResults] = useState<LottoResult[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [newResult, setNewResult] = useState<Partial<LottoResult>>({
-    drawTime: '',
-    drawDate: '',
+    draw_time: '',
+    draw_date: '',
     numbers: [],
     type: 'Fortune 14H',
     status: 'pending',
   });
+
+  useEffect(() => {
+    fetchResults();
+  }, []);
+
+  const fetchResults = async () => {
+    try {
+      const data = await getLottoResults();
+      setResults(data);
+    } catch (error) {
+      console.error('Error fetching results:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleNumberInput = (index: number, value: string) => {
     const num = parseInt(value);
@@ -31,23 +39,36 @@ export default function LottoPage() {
     setNewResult({ ...newResult, numbers: newNumbers });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Add Supabase integration
-    const result: LottoResult = {
-      id: Date.now().toString(),
-      ...newResult as LottoResult,
-    };
-    setResults([...results, result]);
-    setShowAddForm(false);
-    setNewResult({
-      drawTime: '',
-      drawDate: '',
-      numbers: [],
-      type: 'Fortune 14H',
-      status: 'pending',
-    });
+    try {
+      const result = await addLottoResult(newResult as Omit<LottoResult, 'id' | 'created_at'>);
+      setResults([result, ...results]);
+      setShowAddForm(false);
+      setNewResult({
+        draw_time: '',
+        draw_date: '',
+        numbers: [],
+        type: 'Fortune 14H',
+        status: 'pending',
+      });
+    } catch (error) {
+      console.error('Error adding result:', error);
+    }
   };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteLottoResult(id);
+      setResults(results.filter(result => result.id !== id));
+    } catch (error) {
+      console.error('Error deleting result:', error);
+    }
+  };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
 
   return (
     <div>
@@ -83,8 +104,8 @@ export default function LottoPage() {
                 <label className="block text-sm font-medium text-gray-700">Draw Date</label>
                 <input
                   type="date"
-                  value={newResult.drawDate}
-                  onChange={(e) => setNewResult({ ...newResult, drawDate: e.target.value })}
+                  value={newResult.draw_date}
+                  onChange={(e) => setNewResult({ ...newResult, draw_date: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -93,8 +114,8 @@ export default function LottoPage() {
                 <label className="block text-sm font-medium text-gray-700">Draw Time</label>
                 <input
                   type="time"
-                  value={newResult.drawTime}
-                  onChange={(e) => setNewResult({ ...newResult, drawTime: e.target.value })}
+                  value={newResult.draw_time}
+                  onChange={(e) => setNewResult({ ...newResult, draw_time: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -170,10 +191,10 @@ export default function LottoPage() {
                   <div className="text-sm font-medium text-gray-900">{result.type}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{new Date(result.drawDate).toLocaleDateString()}</div>
+                  <div className="text-sm text-gray-900">{new Date(result.draw_date).toLocaleDateString()}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{result.drawTime}</div>
+                  <div className="text-sm text-gray-900">{result.draw_time}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex space-x-2">
@@ -193,7 +214,12 @@ export default function LottoPage() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button className="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                  <button className="text-red-600 hover:text-red-900">Delete</button>
+                  <button 
+                    onClick={() => handleDelete(result.id)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}

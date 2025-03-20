@@ -1,44 +1,65 @@
 'use client';
 
-import { useState } from 'react';
-
-interface Match {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  date: string;
-  league: string;
-  status: 'scheduled' | 'live' | 'completed';
-}
+import { useState, useEffect } from 'react';
+import { supabase, Match, addMatch, getMatches, deleteMatch } from '@/lib/supabase';
 
 export default function MatchesPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [newMatch, setNewMatch] = useState<Partial<Match>>({
-    homeTeam: '',
-    awayTeam: '',
+    home_team: '',
+    away_team: '',
     date: '',
     league: '',
     status: 'scheduled',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Add Supabase integration
-    const match: Match = {
-      id: Date.now().toString(),
-      ...newMatch as Match,
-    };
-    setMatches([...matches, match]);
-    setShowAddForm(false);
-    setNewMatch({
-      homeTeam: '',
-      awayTeam: '',
-      date: '',
-      league: '',
-      status: 'scheduled',
-    });
+  useEffect(() => {
+    fetchMatches();
+  }, []);
+
+  const fetchMatches = async () => {
+    try {
+      const data = await getMatches();
+      setMatches(data);
+    } catch (error) {
+      console.error('Error fetching matches:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const match = await addMatch(newMatch as Omit<Match, 'id' | 'created_at'>);
+      setMatches([match, ...matches]);
+      setShowAddForm(false);
+      setNewMatch({
+        home_team: '',
+        away_team: '',
+        date: '',
+        league: '',
+        status: 'scheduled',
+      });
+    } catch (error) {
+      console.error('Error adding match:', error);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMatch(id);
+      setMatches(matches.filter(match => match.id !== id));
+    } catch (error) {
+      console.error('Error deleting match:', error);
+    }
+  };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
 
   return (
     <div>
@@ -62,8 +83,8 @@ export default function MatchesPage() {
                 <label className="block text-sm font-medium text-gray-700">Home Team</label>
                 <input
                   type="text"
-                  value={newMatch.homeTeam}
-                  onChange={(e) => setNewMatch({ ...newMatch, homeTeam: e.target.value })}
+                  value={newMatch.home_team}
+                  onChange={(e) => setNewMatch({ ...newMatch, home_team: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -72,8 +93,8 @@ export default function MatchesPage() {
                 <label className="block text-sm font-medium text-gray-700">Away Team</label>
                 <input
                   type="text"
-                  value={newMatch.awayTeam}
-                  onChange={(e) => setNewMatch({ ...newMatch, awayTeam: e.target.value })}
+                  value={newMatch.away_team}
+                  onChange={(e) => setNewMatch({ ...newMatch, away_team: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -131,12 +152,12 @@ export default function MatchesPage() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {matches.map((match) => (
+            {matches?.map((match) => (
               <tr key={match.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{match.homeTeam}</div>
+                  <div className="text-sm font-medium text-gray-900">{match.home_team}</div>
                   <div className="text-sm text-gray-500">vs</div>
-                  <div className="text-sm font-medium text-gray-900">{match.awayTeam}</div>
+                  <div className="text-sm font-medium text-gray-900">{match.away_team}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">{new Date(match.date).toLocaleString()}</div>
@@ -155,7 +176,12 @@ export default function MatchesPage() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button className="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                  <button className="text-red-600 hover:text-red-900">Delete</button>
+                  <button 
+                    onClick={() => handleDelete(match.id)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}

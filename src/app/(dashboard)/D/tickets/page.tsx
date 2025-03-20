@@ -1,20 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-
-interface Ticket {
-  id: string;
-  ticketNumber: string;
-  date: string;
-  type: 'Poto' | 'Tout chaud' | '3 Nape' | '4 Nape' | 'Perm';
-  numbers: number[];
-  amount: number;
-  status: 'pending' | 'won' | 'lost';
-  phoneNumber: string;
-}
+import { useState, useEffect } from 'react';
+import { supabase, Ticket, getTickets, deleteTicket, updateTicketStatus } from '@/lib/supabase';
 
 export default function TicketsPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<{
     status: 'all' | 'pending' | 'won' | 'lost';
     type: 'all' | Ticket['type'];
@@ -24,6 +15,41 @@ export default function TicketsPage() {
     type: 'all',
     dateRange: 'all',
   });
+
+  useEffect(() => {
+    fetchTickets();
+  }, []);
+
+  const fetchTickets = async () => {
+    try {
+      const data = await getTickets();
+      setTickets(data);
+    } catch (error) {
+      console.error('Error fetching tickets:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteTicket(id);
+      setTickets(tickets.filter(ticket => ticket.id !== id));
+    } catch (error) {
+      console.error('Error deleting ticket:', error);
+    }
+  };
+
+  const handleStatusUpdate = async (id: string, newStatus: Ticket['status']) => {
+    try {
+      await updateTicketStatus(id, newStatus);
+      setTickets(tickets.map(ticket => 
+        ticket.id === id ? { ...ticket, status: newStatus } : ticket
+      ));
+    } catch (error) {
+      console.error('Error updating ticket status:', error);
+    }
+  };
 
   const filteredTickets = tickets.filter((ticket) => {
     if (filter.status !== 'all' && ticket.status !== filter.status) return false;
@@ -40,6 +66,10 @@ export default function TicketsPage() {
 
     return true;
   });
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
 
   return (
     <div>
@@ -113,7 +143,7 @@ export default function TicketsPage() {
             {filteredTickets.map((ticket) => (
               <tr key={ticket.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{ticket.ticketNumber}</div>
+                  <div className="text-sm font-medium text-gray-900">{ticket.ticket_number}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">{new Date(ticket.date).toLocaleString()}</div>
@@ -134,20 +164,31 @@ export default function TicketsPage() {
                   <div className="text-sm text-gray-900">FCFA {ticket.amount.toLocaleString()}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{ticket.phoneNumber}</div>
+                  <div className="text-sm text-gray-900">{ticket.phone_number}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    ticket.status === 'won' ? 'bg-green-100 text-green-800' :
-                    ticket.status === 'lost' ? 'bg-red-100 text-red-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {ticket.status}
-                  </span>
+                  <select
+                    value={ticket.status}
+                    onChange={(e) => handleStatusUpdate(ticket.id, e.target.value as Ticket['status'])}
+                    className={`text-sm rounded-full px-2 py-1 ${
+                      ticket.status === 'won' ? 'bg-green-100 text-green-800' :
+                      ticket.status === 'lost' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="won">Won</option>
+                    <option value="lost">Lost</option>
+                  </select>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button className="text-blue-600 hover:text-blue-900 mr-3">View</button>
-                  <button className="text-red-600 hover:text-red-900">Delete</button>
+                  <button 
+                    onClick={() => handleDelete(ticket.id)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
