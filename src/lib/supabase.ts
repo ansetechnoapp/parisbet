@@ -1,20 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  // alert('zs')
-  throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL');
+if (!process.env?.PUBLIC_SUPABASE_URL) {
+  throw new Error('Missing PUBLIC_SUPABASE_URL environment variable');
 }
-if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  // alert('zs')
-  throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY');
+if (!process.env?.PUBLIC_SUPABASE_ANON_KEY) {
+  throw new Error('Missing PUBLIC_SUPABASE_ANON_KEY environment variable');
 }
 
 export const supabase = createClient(
-  `${process.env.PUBLIC_SUPABASE_URL}`,
-  `${process.env.PUBLIC_SUPABASE_ANON_KEY}`
+  process.env.PUBLIC_SUPABASE_URL as string,
+  process.env.PUBLIC_SUPABASE_ANON_KEY as string
 );
 
-// console.log(process.env.NEXT_PUBLIC_SUPABASE_URL)
 // Database types
 export interface Match {
   id: string;
@@ -135,4 +132,4 @@ export async function deleteTicket(ticketId: string) {
     .eq('id', ticketId);
 
   if (error) throw error;
-} 
+}
