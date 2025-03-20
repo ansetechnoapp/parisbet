@@ -129,17 +129,7 @@ export default function Home() {
     setDirectInputNumbers(Array(betTypes[betType].slots).fill(''));
   };
 
-  const handleFlashClick = () => {
-    const maxSlots = betTypes[betType].slots;
-    const randomNumbers: number[] = [];
-    while (randomNumbers.length < maxSlots) {
-      const randomNum = Math.floor(Math.random() * 90) + 1;
-      if (!randomNumbers.includes(randomNum)) {
-        randomNumbers.push(randomNum);
-      }
-    }
-    setSelectedNumbers(randomNumbers);
-  };
+
 
   useEffect(() => {
     // Initialize empty inputs when bet type changes

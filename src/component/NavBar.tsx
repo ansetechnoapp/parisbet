@@ -14,32 +14,32 @@ export default function NavBar() {
           <Link href="/" className="text-green-600 text-2xl md:text-3xl font-bold tracking-tight">paribet</Link>
           {/* Navigation desktop */}
           <nav className="hidden md:flex ml-10 space-x-8">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className={`${pathname === '/' ? 'text-green-600 border-b-2 border-green-500' : 'text-gray-600'} font-medium pb-1 hover:text-green-600 transition-colors`}
             >
               Jouer au loto
             </Link>
-            <Link 
-              href="/foot" 
+            <Link
+              href="/foot"
               className={`${pathname === '/foot' ? 'text-green-600 border-b-2 border-green-500' : 'text-gray-600'} font-medium pb-1 hover:text-green-600 transition-colors`}
             >
               Paris football
             </Link>
-            <Link 
-              href="/results" 
+            <Link
+              href="/results"
               className={`${pathname === '/results' ? 'text-green-600 border-b-2 border-green-500' : 'text-gray-600'} font-medium pb-1 hover:text-green-600 transition-colors`}
             >
               Résultats
             </Link>
-            <Link 
-              href="/how-to-play" 
+            <Link
+              href="/how-to-play"
               className={`${pathname === '/how-to-play' ? 'text-green-600 border-b-2 border-green-500' : 'text-gray-600'} font-medium pb-1 hover:text-green-600 transition-colors`}
             >
               Comment jouer
             </Link>
-            <Link 
-              href="/prize-distribution" 
+            <Link
+              href="/prize-distribution"
               className={`${pathname === '/prize-distribution' ? 'text-green-600 border-b-2 border-green-500' : 'text-gray-600'} font-medium pb-1 hover:text-green-600 transition-colors`}
             >
               Distribution des gains
@@ -48,7 +48,7 @@ export default function NavBar() {
         </div>
 
         {/* Bouton menu mobile */}
-        <button 
+        <button
           className="md:hidden p-2"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
@@ -61,7 +61,7 @@ export default function NavBar() {
           </svg>
         </button>
 
-        <Link href="/tickets" className="hidden md:block bg-green-600 hover:bg-green-700 transition-colors text-white px-6 py-2 rounded-full font-medium shadow-lg shadow-green-200">
+        <Link href="/verify-phone" className="hidden md:block bg-green-600 hover:bg-green-700 transition-colors text-white px-6 py-2 rounded-full font-medium shadow-lg shadow-green-200">
           Mes tickets
         </Link>
       </div>
@@ -70,39 +70,39 @@ export default function NavBar() {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-green-100">
           <nav className="flex flex-col py-2">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className={`px-4 py-2 ${pathname === '/' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
             >
               Jouer au loto
             </Link>
-            <Link 
-              href="/foot" 
+            <Link
+              href="/foot"
               className={`px-4 py-2 ${pathname === '/foot' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
             >
               Paris football
             </Link>
-            <Link 
-              href="/results" 
+            <Link
+              href="/results"
               className={`px-4 py-2 ${pathname === '/results' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
             >
               Résultats
             </Link>
-            <Link 
-              href="/how-to-play" 
+            <Link
+              href="/how-to-play"
               className={`px-4 py-2 ${pathname === '/how-to-play' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
             >
               Comment jouer
             </Link>
-            <Link 
-              href="/prize-distribution" 
+            <Link
+              href="/prize-distribution"
               className={`px-4 py-2 ${pathname === '/prize-distribution' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
             >
               Distribution des gains
             </Link>
-            <Link 
-              href="/tickets" 
-              className={`px-4 py-2 ${pathname === '/tickets' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
+            <Link
+              href="/verify-phone"
+              className={`px-4 py-2 ${pathname === '/verify-phone' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
             >
               Mes tickets
             </Link>

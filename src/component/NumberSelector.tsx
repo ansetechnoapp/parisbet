@@ -27,7 +27,6 @@ interface NumberSelectorProps {
   handleDirectInputKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, index: number) => void;
   handleCustomNumberKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, index: number) => void;
   startEditing: (index: number) => void;
-  handleFlashClick: () => void;
   clearSelection: () => void;
 }
 
@@ -37,21 +36,12 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
   betExplanations,
   selectedNumbers,
   setSelectedNumbers,
-  directEntryMode,
-  setDirectEntryMode,
   directInputNumbers,
   setDirectInputNumbers,
-  editingIndex,
   setEditingIndex,
-  customNumber,
   setCustomNumber,
-  handleNumberClick,
-  handleCustomNumberChange,
   handleDirectInputChange,
   handleDirectInputKeyDown,
-  handleCustomNumberKeyDown,
-  startEditing,
-  handleFlashClick,
   clearSelection
 }) => {
 
@@ -85,30 +75,24 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
             </div>
           </div>
         </div>
-        <button 
-          className={`px-3 py-1.5 rounded-lg border ${
-            directEntryMode 
-              ? 'bg-green-600 text-white border-green-700 shadow-sm' 
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-          } text-sm font-medium transition-all duration-200 flex items-center`}
-          onClick={() => setDirectEntryMode(!directEntryMode)}
-        >
-          <span className="mr-1">{directEntryMode ? '✏️' : '✏️'}</span>
-          Saisie directe {directEntryMode ? '✓' : ''}
-        </button>
+
       </div>
       <p className="text-sm text-gray-600 mb-4">
         Saisis {betTypes[betType].slots} numéros entre 1 et 90
       </p>
 
-      <div className="flex space-x-2 mb-4"> 
-        <button 
+      {/*
+      <div className="flex space-x-2 mb-4">
+        <button
           onClick={handleFlashClick}
           className="flex items-center bg-white border border-gray-300 rounded px-3 py-1"
         >
           <span className="text-yellow-500 mr-1">⚡</span> Flash
         </button>
-        <button 
+      </div>*/}
+
+      <div className="flex space-x-2 mb-4">
+        <button
           onClick={clearSelection}
           className="flex items-center bg-white border border-gray-300 rounded px-3 py-1"
         >
@@ -117,7 +101,7 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
       </div>
 
       {/* Affichage des numéros sélectionnés ou interface de saisie directe */}
-      {directEntryMode ? (
+     
         <div className="bg-white p-3 rounded-lg border border-gray-200 mb-4">
           <p className="text-sm text-gray-600 mb-1">Entrez directement vos numéros:</p>
           <div className="flex flex-wrap gap-6">
@@ -154,64 +138,7 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
             })}
           </div>
         </div>
-      ) : (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {[...Array(totalSlots)].map((_, index) => {
-            const isDisabled = index >= betTypes[betType].slots;
-            return (
-              <div 
-                key={index} 
-                className={`w-12 h-12 rounded flex items-center justify-center border ${
-                  isDisabled 
-                    ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
-                    : selectedNumbers[index] 
-                      ? 'border-green-600 bg-white text-green-600' 
-                      : 'border-gray-300 bg-gray-200 text-gray-400'
-                } ${!isDisabled && directEntryMode ? 'cursor-pointer' : ''}`}
-                onClick={() => !isDisabled && startEditing(index)}
-              >
-                {editingIndex === index && !isDisabled ? (
-                  <input
-                    type="number"
-                    min="1"
-                    max="90"
-                    value={customNumber}
-                    onChange={handleCustomNumberChange}
-                    onKeyDown={(e) => handleCustomNumberKeyDown(e, index)}
-                    className="w-10 h-10 text-center outline-none border-none bg-transparent"
-                    autoFocus
-                  />
-                ) : (
-                  isDisabled ? 'X' : (selectedNumbers[index] || 'X')
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Grille de numéros complète */}
-      {!directEntryMode && (
-        <div className="grid grid-cols-6 md:grid-cols-9 gap-2 mb-6">
-          {[...Array(90)].map((_, index) => {
-            const number = index + 1;
-            return (
-              <button
-                key={number}
-                onClick={() => handleNumberClick(number)}
-                className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-base md:text-lg font-medium transition-all ${
-                  selectedNumbers.includes(number) 
-                    ? 'bg-green-600 text-white shadow-lg shadow-green-200' 
-                    : 'bg-white hover:bg-green-50 border border-gray-200'
-                }`}
-              >
-                {number}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
+    
       <button className='hidden' onClick={handleSomeEvent1}>Click me</button>
     </div>
   );
