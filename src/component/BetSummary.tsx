@@ -53,8 +53,9 @@ const BetSummary: React.FC<BetSummaryProps> = ({
         </div>
 
         <div className="flex justify-between mb-4">
-          <img src="/placeholder-mtn.png" alt="MTN" className="h-8" />
-          <img src="/placeholder-moov.png" alt="Moov" className="h-8" />
+          <img src="/mtn.png" alt="MTN" className="h-8" />
+          <img src="/Moov_Africa_logo.png" alt="Moov" className="h-8" /> 
+          <img src="/celtis.jpg" alt="Celtis" className="h-8" /> 
         </div>
 
         <form>
