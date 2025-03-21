@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase, Ticket, getTickets, deleteTicket, updateTicketStatus } from '@/lib/supabase';
+import { Ticket, getTickets, deleteTicket, updateTicketStatus } from '@/lib/supabase';
 
 export default function TicketsPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);

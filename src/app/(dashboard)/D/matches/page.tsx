@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase, Match, addMatch, getMatches, deleteMatch } from '@/lib/supabase';
+import {  Match, addMatch, getMatches, deleteMatch } from '@/lib/supabase';
 
 export default function MatchesPage() {
   const [matches, setMatches] = useState<Match[]>([]);

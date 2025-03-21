@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase, LottoResult, addLottoResult, getLottoResults, deleteLottoResult } from '@/lib/supabase';
+import { LottoResult, addLottoResult, getLottoResults, deleteLottoResult } from '@/lib/supabase';
 
 export default function LottoPage() {
   const [results, setResults] = useState<LottoResult[]>([]);
