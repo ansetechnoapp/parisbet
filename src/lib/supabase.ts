@@ -1,15 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-if (!process.env?.PUBLIC_SUPABASE_URL) {
-  throw new Error('Missing PUBLIC_SUPABASE_URL environment variable');
+if (!process.env?.NEXT_PUBLIC_SUPABASE_URL) {
+  throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
 }
-if (!process.env?.PUBLIC_SUPABASE_ANON_KEY) {
-  throw new Error('Missing PUBLIC_SUPABASE_ANON_KEY environment variable');
+if (!process.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
 }
 
+
 export const supabase = createClient(
-  process.env.PUBLIC_SUPABASE_URL as string,
-  process.env.PUBLIC_SUPABASE_ANON_KEY as string 
+  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string 
 );
 
 // Database types
