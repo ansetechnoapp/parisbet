@@ -2,25 +2,45 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Ticket, getTickets } from '@/lib/supabase';
+import { Ticket, getTicketsByPhoneNumber } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function TicketListPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
+  const router = useRouter();
   
   useEffect(() => {
-    fetchTickets();
-  }, []);
+    // Check if user has a stored phone number
+    const storedPhoneNumber = typeof window !== 'undefined' ? localStorage.getItem('userPhoneNumber') : null;
+    
+    if (!storedPhoneNumber) {
+      // If no phone number is stored, redirect to verify-phone
+      router.push('/verify-phone');
+      return;
+    }
+    
+    setPhoneNumber(storedPhoneNumber);
+    fetchTickets(storedPhoneNumber);
+  }, [router]);
   
-  const fetchTickets = async () => {
+  const fetchTickets = async (phone: string) => { 
     try {
-      const data = await getTickets();
+      // console.log('Fetching tickets for phone:', phone); // Debug log
+      const data = await getTicketsByPhoneNumber(phone);
+      // console.log('Supabase response:', data); // Debug log
       setTickets(data);
     } catch (error) {
       console.error('Error fetching tickets:', error);
     } finally {
       setLoading(false);
     }
+  };
+  
+  const handleLogout = () => {
+    localStorage.removeItem('userPhoneNumber');
+    router.push('/verify-phone');
   };
   
   const getStatusColor = (status: string) => {
@@ -45,7 +65,20 @@ export default function TicketListPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Mes tickets</h1>
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Mes tickets</h1>
+            {phoneNumber && (
+              <div className="mt-2 md:mt-0 flex gap-4 items-center">
+                <p className="text-sm text-gray-600">Numéro: <span className="font-medium">{phoneNumber}</span></p>
+                <button 
+                  onClick={handleLogout}
+                  className="text-sm text-red-600 hover:text-red-700"
+                >
+                  Déconnexion
+                </button>
+              </div>
+            )}
+          </div>
           
           {loading ? (
             <div className="p-12 text-center">
@@ -110,8 +143,11 @@ export default function TicketListPage() {
             </div>
           )}
           
-          <div className="mt-8 text-center">
-            <Link href="/" className="text-green-600 hover:text-green-700 transition-colors">
+          <div className="mt-8 text-center space-y-2">
+            <Link href="/find-ticket" className="block text-green-600 hover:text-green-700 transition-colors">
+              Rechercher un ticket par ID
+            </Link>
+            <Link href="/" className="block text-green-600 hover:text-green-700 transition-colors">
               ← Retour à l&apos;accueil
             </Link>
           </div>

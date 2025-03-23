@@ -32,7 +32,7 @@ export interface Match {
 
 export interface FootballBet {
   id: string;
-  matches: Array<{
+  matches: Array<{ 
     match_id: string;
     bet_type: string;
     odds: number;
@@ -96,6 +96,75 @@ export async function getTickets() {
 
   if (error) throw error;
   return data;
+}
+
+export async function getTicketsByPhoneNumber(phoneNumber: string) {
+  const formattedPhone = phoneNumber.toString().trim().replace(/[^\d]/g, '');
+  const { data, error } = await supabase
+    .from('tickets')
+    .select('*')
+    .ilike('phone_number', `%${formattedPhone}%`)
+    .order('date', { ascending: false });
+
+  if (error) {
+    console.error('Supabase query error:', error);
+    throw error;
+  }
+  return data || [];
+}
+
+export interface CreateTicketData {
+  ticket_number: string;
+  date: string;
+  type: 'Poto' | 'Tout chaud' | '3 Nape' | '4 Nape' | 'Perm';
+  numbers: number[];
+  amount: number;
+  status: 'pending' | 'won' | 'lost';
+  phone_number: string;
+}
+
+export async function createTicket(ticketData: CreateTicketData): Promise<Ticket> {
+  // Normaliser le numéro de téléphone avant de l'insérer
+  const normalizedPhone = ticketData.phone_number.toString().trim().replace(/\D/g, '');
+  
+  const { data, error } = await supabase
+    .from('tickets')
+    .insert([{
+      ...ticketData,
+      phone_number: normalizedPhone
+    }])
+    .select();
+
+  if (error) throw error;
+  return data[0];
+}
+
+export async function getTicketById(ticketNumber: string) {
+  const formattedTicketNumber = ticketNumber.toString().trim();
+  try {
+    // Direct approach using properly formatted ticket ID
+    const { data, error } = await supabase
+      .from('tickets')
+      .select('*')
+      .eq('ticket_number', formattedTicketNumber)
+      .maybeSingle(); // Use maybeSingle() instead of single() to avoid errors when no results
+
+    if (error) {
+      console.error('[Debug] Database error:', error);
+      throw error;
+    }
+
+    if (!data) {
+      console.log('[Debug] No ticket found with ID:', formattedTicketNumber);
+      return null;
+    }
+
+    // console.log('[Debug] Query result:', data);
+    return data;
+  } catch (error) {
+    console.error('[Debug] Error in getTicketById:', error);
+    throw error;
+  }
 }
 
 export async function addMatch(match: Omit<Match, 'id' | 'created_at'>) {

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getTicketsByPhoneNumber } from '@/lib/supabase';
 
 export default function VerifyPhonePage() {
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -17,12 +18,12 @@ export default function VerifyPhonePage() {
         setError('');
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Basic validation
         if (!phoneNumber) {
-            setError('Veuillez entrer votre numéro de téléphone');
+            setError('Veuillez entrer votre numéro de téléphone'); 
             return;
         }
 
@@ -33,12 +34,21 @@ export default function VerifyPhonePage() {
 
         setIsSubmitting(true);
 
-        // Simulating API call - in a real app, you would call your backend here
-        setTimeout(() => {
-            setIsSubmitting(false);
+        try {
+            // Fetch tickets and store phone number in localStorage for later use
+            const tickets = await getTicketsByPhoneNumber(phoneNumber);
+            
+            // Store in session to use on tickets list page
+            localStorage.setItem('userPhoneNumber', phoneNumber);
+            
             // Redirect to tickets list page
             router.push('/ticketsList');
-        }, 1000);
+        } catch (error) {
+            console.error('Error fetching tickets:', error);
+            setError('Une erreur est survenue. Veuillez réessayer.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -48,7 +58,7 @@ export default function VerifyPhonePage() {
                     Entrez votre numéro de téléphone
                 </h1>
                 <p className="text-center text-gray-600 mb-6">
-                    Cette étape sert à confirmer votre numéro de téléphone.
+                    Cette étape sert à confirmer votre numéro de téléphone pour accéder à vos tickets.
                 </p>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -77,8 +87,11 @@ export default function VerifyPhonePage() {
                     </button>
                 </form>
 
-                <div className="mt-6 text-center">
-                    <Link href="/" className="text-sm text-green-600 hover:text-green-700 transition-colors">
+                <div className="mt-6 text-center space-y-2">
+                    <Link href="/find-ticket" className="block text-green-600 hover:text-green-700 transition-colors">
+                        Rechercher un ticket par ID
+                    </Link>
+                    <Link href="/" className="block text-sm text-green-600 hover:text-green-700 transition-colors">
                         ← Retourner à la page d&apos;accueil
                     </Link>
                 </div>

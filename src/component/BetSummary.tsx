@@ -1,4 +1,5 @@
 'use client';
+import { createTicket } from '@/lib/supabase';
 import React, { useState } from 'react';
 
 interface BetType {
@@ -68,6 +69,7 @@ const BetSummary: React.FC<BetSummaryProps> = ({
       setError("Le numéro de téléphone doit contenir 8 ou 10 chiffres");
       return;
     }
+    
 
     const totalAmount = calculateTotalAmount();
     if (totalAmount < 100 || totalAmount > 100000) {
@@ -79,6 +81,11 @@ const BetSummary: React.FC<BetSummaryProps> = ({
       setError("Veuillez ajouter au moins un pari");
       return;
     }
+    createTicket({
+      phone_number: phoneNumber,
+      bets,
+      total_amount: calculateTotalAmount(),
+    });
 
     setIsSubmitting(true);
     try {
