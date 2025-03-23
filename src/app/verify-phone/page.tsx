@@ -37,12 +37,16 @@ export default function VerifyPhonePage() {
         try {
             // Fetch tickets and store phone number in localStorage for later use
             const tickets = await getTicketsByPhoneNumber(phoneNumber);
-            
-            // Store in session to use on tickets list page
-            localStorage.setItem('userPhoneNumber', phoneNumber);
+            if (tickets
+                && tickets.length > 0) {
+                // Store in session to use on tickets list page
+                localStorage.setItem('userPhoneNumber', phoneNumber);
+                
+                // Redirect to tickets list page
+                router.push('/ticketsList');
+            }
             
             // Redirect to tickets list page
-            router.push('/ticketsList');
         } catch (error) {
             console.error('Error fetching tickets:', error);
             setError('Une erreur est survenue. Veuillez réessayer.');
