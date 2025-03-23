@@ -20,6 +20,11 @@ export default function Home() {
   const [customNumber, setCustomNumber] = useState('');
   const [directEntryMode, setDirectEntryMode] = useState(true);
   const [directInputNumbers, setDirectInputNumbers] = useState<string[]>([]);
+  const [bets, setBets] = useState<Array<{
+    betType: keyof typeof betTypes;
+    selectedNumbers: number[];
+    betAmount: number;
+  }>>([]);
 
   // Types de paris disponibles et leurs configurations
   const betTypes = {
@@ -60,7 +65,13 @@ export default function Home() {
       setSelectedNumbers(selectedNumbers.filter(num => num !== number));
     } else {
       if (selectedNumbers.length < betTypes[betType].slots) {
-        setSelectedNumbers([...selectedNumbers, number]);
+        const newSelectedNumbers = [...selectedNumbers, number];
+        setSelectedNumbers(newSelectedNumbers);
+
+        // If this selection completes the bet, clear the direct input
+        if (newSelectedNumbers.length === betTypes[betType].slots) {
+          setDirectInputNumbers(Array(betTypes[betType].slots).fill(''));
+        }
       }
     }
   };
@@ -70,9 +81,17 @@ export default function Home() {
   };
 
   const handleDirectInputChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const value = e.target.value;
     const newInputs = [...directInputNumbers];
-    newInputs[index] = e.target.value;
+    newInputs[index] = value;
     setDirectInputNumbers(newInputs);
+
+    const num = parseInt(value);
+    if (!isNaN(num) && num >= 1 && num <= 90 && !selectedNumbers.includes(num)) {
+      const newSelectedNumbers = [...selectedNumbers];
+      newSelectedNumbers[index] = num;
+      setSelectedNumbers(newSelectedNumbers);
+    }
   };
 
   const handleDirectInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
@@ -83,12 +102,12 @@ export default function Home() {
         const newSelectedNumbers = [...selectedNumbers];
         newSelectedNumbers[index] = number;
         setSelectedNumbers(newSelectedNumbers);
-        
+
         // Clear input field
         const newInputs = [...directInputNumbers];
         newInputs[index] = '';
         setDirectInputNumbers(newInputs);
-        
+
         // Move focus to next input if available
         if (index < betTypes[betType].slots - 1) {
           const nextInput = document.getElementById(`direct-input-${index + 1}`);
@@ -129,6 +148,24 @@ export default function Home() {
     setDirectInputNumbers(Array(betTypes[betType].slots).fill(''));
   };
 
+  const handleAddBet = () => {
+    if (selectedNumbers.length === betTypes[betType].slots) {
+      // Add current bet to bets array
+      setBets([...bets, {
+        betType,
+        selectedNumbers: [...selectedNumbers],
+        betAmount
+      }]);
+
+      // Clear the current selection for next bet
+      clearSelection();
+    }
+  };
+
+  const handleRemoveBet = (index: number) => {
+    setBets(bets.filter((_, i) => i !== index));
+  };
+
   useEffect(() => {
     // Initialize empty inputs when bet type changes
     setDirectInputNumbers(Array(betTypes[betType].slots).fill(''));
@@ -147,27 +184,27 @@ export default function Home() {
 
       <main className="container mx-auto p-4 md:p-6 flex flex-col md:flex-row md:space-x-8">
         <div className="w-full md:w-2/3">
-          <DrawSelector 
+          <DrawSelector
             availableDraws={availableDraws}
             selectedDraw={selectedDraw}
             setSelectedDraw={setSelectedDraw}
           />
 
-          <BetAmountSelector 
+          <BetAmountSelector
             betAmount={betAmount}
             setBetAmount={setBetAmount}
             pricingNote={pricingNote}
           />
 
-          <BetTypeSelector 
+          <BetTypeSelector
             betType={betType}
-            setBetType={setBetType as (type: string) => void} 
+            setBetType={setBetType as (type: string) => void}
             betTypes={betTypes}
             betExplanations={betExplanations}
             setSelectedNumbers={setSelectedNumbers}
           />
 
-          <NumberSelector 
+          <NumberSelector
             betType={betType}
             betTypes={betTypes}
             betExplanations={betExplanations}
@@ -190,19 +227,26 @@ export default function Home() {
             clearSelection={clearSelection}
           />
 
-          <MultipleBet />
+          <MultipleBet
+            onAddBet={handleAddBet}
+            bets={bets}
+            onRemoveBet={handleRemoveBet}
+            currentBetValid={selectedNumbers.length === betTypes[betType].slots}
+            maxBetsReached={bets.length >= 10}
+          />
         </div>
 
-        <BetSummary 
+        <BetSummary
           betAmount={betAmount}
           betType={betType}
           betTypes={betTypes}
           selectedNumbers={selectedNumbers}
           phoneNumber={phoneNumber}
           setPhoneNumber={setPhoneNumber}
+          bets={bets}
         />
       </main>
-      
+
       <Footer />
     </div>
   );

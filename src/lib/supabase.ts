@@ -11,7 +11,7 @@ if (!SUPABASE_ANON_KEY) {
   throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
 }
 
-export const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+export const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
 
 // Database types
 export interface Match {

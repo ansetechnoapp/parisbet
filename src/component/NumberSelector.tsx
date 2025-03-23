@@ -36,30 +36,29 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
   betExplanations,
   selectedNumbers,
   setSelectedNumbers,
+  directEntryMode,
+  setDirectEntryMode,
   directInputNumbers,
   setDirectInputNumbers,
+  editingIndex,
   setEditingIndex,
+  customNumber,
   setCustomNumber,
+  handleNumberClick,
+  handleCustomNumberChange,
   handleDirectInputChange,
   handleDirectInputKeyDown,
+  handleCustomNumberKeyDown,
+  startEditing,
   clearSelection
 }) => {
-
-  
   const getTotalSlots = (type: string) => {
     return type === 'Perm' ? 30 : 5;
   };
 
-  const handleSomeEvent1 = () => {
-    setSelectedNumbers([1, 2, 3]);
-    setEditingIndex(null);
-    setCustomNumber('');
-    setDirectInputNumbers(['1', '2', '3']);
-  };
-
-
   const totalSlots = getTotalSlots(betType);
-  
+  const remainingSlots = betTypes[betType].slots - selectedNumbers.length;
+
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-2">
@@ -75,71 +74,63 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
             </div>
           </div>
         </div>
-
       </div>
-      <p className="text-sm text-gray-600 mb-4">
-        Saisis {betTypes[betType].slots} numéros entre 1 et 90
-      </p>
 
-      {/*
-      <div className="flex space-x-2 mb-4">
-        <button
-          onClick={handleFlashClick}
-          className="flex items-center bg-white border border-gray-300 rounded px-3 py-1"
-        >
-          <span className="text-yellow-500 mr-1">⚡</span> Flash
-        </button>
-      </div>*/}
+      <p className={`text-sm ${remainingSlots > 0 ? 'text-gray-600' : 'text-green-600 font-medium'} mb-4`}>
+        {remainingSlots > 0
+          ? `Il te reste ${remainingSlots} numéro${remainingSlots > 1 ? 's' : ''} à sélectionner`
+          : 'Sélection complète! Tu peux ajouter ce pari ou le valider directement.'
+        }
+      </p>
 
       <div className="flex space-x-2 mb-4">
         <button
           onClick={clearSelection}
-          className="flex items-center bg-white border border-gray-300 rounded px-3 py-1"
+          className="flex items-center bg-white border border-gray-300 rounded px-3 py-1 hover:bg-gray-50 transition-colors"
         >
           <span className="mr-1">🗑️</span> Effacer
         </button>
       </div>
 
-      {/* Affichage des numéros sélectionnés ou interface de saisie directe */}
-     
-        <div className="bg-white p-3 rounded-lg border border-gray-200 mb-4">
-          <p className="text-sm text-gray-600 mb-1">Entrez directement vos numéros:</p>
-          <div className="flex flex-wrap gap-6">
-            {[...Array(totalSlots)].map((_, index) => {
-              const isDisabled = index >= betTypes[betType].slots;
-              return (
-                <div key={index} className="flex flex-col items-center">
-                  <label className={`text-xs mb-0.5 ${isDisabled ? 'text-gray-400' : 'text-gray-500'}`}>
-                    N°{index + 1}
-                  </label>
-                  <div className="relative w-full">
-                    <input
-                      id={`direct-input-${index}`}
-                      type="number"
-                      min="1"
-                      max="90"
-                      placeholder={isDisabled ? "X" : "1-90"}
-                      value={isDisabled ? "X" : (directInputNumbers[index] || '')}
-                      onChange={(e) => handleDirectInputChange(e, index)}
-                      onKeyDown={(e) => handleDirectInputKeyDown(e, index)}
-                      disabled={isDisabled}
-                      className={`w-full h-20 p-1 border rounded-full text-center focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg font-medium
-                        ${isDisabled 
-                          ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' 
+      <div className="bg-white p-3 rounded-lg border border-gray-200">
+        <p className="text-sm text-gray-600 mb-3">Entrez vos numéros (entre 1 et 90):</p>
+        <div className="flex flex-wrap gap-6">
+          {[...Array(totalSlots)].map((_, index) => {
+            const isDisabled = index >= betTypes[betType].slots;
+            const isFilled = selectedNumbers[index] !== undefined;
+            return (
+              <div key={index} className="flex flex-col items-center">
+                <label className={`text-xs mb-0.5 ${isDisabled ? 'text-gray-400' : 'text-gray-500'}`}>
+                  N°{index + 1}
+                </label>
+                <div className="relative w-full">
+                  <input
+                    id={`direct-input-${index}`}
+                    type="number"
+                    min="1"
+                    max="90"
+                    placeholder={isDisabled ? "X" : "1-90"}
+                    value={directInputNumbers[index] || ''}
+                    onChange={(e) => handleDirectInputChange(e, index)}
+                    onKeyDown={(e) => handleDirectInputKeyDown(e, index)}
+                    disabled={isDisabled}
+                    className={`w-full h-20 p-1 border rounded-full text-center focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg font-medium
+                      ${isDisabled
+                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                        : isFilled
+                          ? 'border-green-500 bg-green-50'
                           : 'border-gray-300'
-                        }`}
-                    />
-                    {selectedNumbers[index] && !isDisabled && (
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600">✓</div>
-                    )}
-                  </div>
+                      }`}
+                  />
+                  {selectedNumbers[index] && !isDisabled && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600">✓</div>
+                  )}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
-    
-      <button className='hidden' onClick={handleSomeEvent1}>Click me</button>
+      </div>
     </div>
   );
 };

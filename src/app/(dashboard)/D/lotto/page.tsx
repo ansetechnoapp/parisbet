@@ -16,7 +16,7 @@ export default function LottoPage() {
   });
 
   useEffect(() => {
-    fetchResults();
+    fetchResults(); 
   }, []);
 
   const fetchResults = async () => {
