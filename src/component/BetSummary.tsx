@@ -83,8 +83,12 @@ const BetSummary: React.FC<BetSummaryProps> = ({
     }
     createTicket({
       phone_number: phoneNumber,
-      bets,
-      total_amount: calculateTotalAmount(),
+      ticket_number: `TKT-${Date.now()}`,
+      date: new Date().toISOString(),
+      type: betType as 'Poto' | 'Tout chaud' | '3 Nape' | '4 Nape' | 'Perm',
+      numbers: bets.flatMap(bet => bet.selectedNumbers),
+      amount: calculateTotalAmount(),
+      status: 'pending'
     });
 
     setIsSubmitting(true);
