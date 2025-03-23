@@ -16,7 +16,6 @@ export default function Home() {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [betAmount, setBetAmount] = useState(100);
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [customNumber, setCustomNumber] = useState('');
   const [directInputNumbers, setDirectInputNumbers] = useState<string[]>([]);
   const [bets, setBets] = useState<Array<{
     betType: keyof typeof betTypes;
@@ -99,7 +98,6 @@ export default function Home() {
 
   const clearSelection = () => {
     setSelectedNumbers([]);
-    setCustomNumber('');
     setDirectInputNumbers(Array(betTypes[betType].slots).fill(''));
   };
 
