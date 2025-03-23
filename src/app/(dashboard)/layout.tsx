@@ -54,7 +54,7 @@ export default function DashboardLayout({
     { path: '/D', label: 'Overview', icon: 'chart-pie' },
     { path: '/D/matches', label: 'Matches', icon: 'football' },
     { path: '/D/tickets', label: 'Tickets', icon: 'ticket' },
-    { path: '/D/tickets/list', label: 'Ticket List', icon: 'list' },
+    { path: '/D/ticketsListAdmin', label: 'Ticket List', icon: 'list' },
     { path: '/D/lotto', label: 'Lotto', icon: 'lottery' },
   ];
 

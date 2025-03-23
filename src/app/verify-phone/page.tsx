@@ -37,7 +37,7 @@ export default function VerifyPhonePage() {
         setTimeout(() => {
             setIsSubmitting(false);
             // Redirect to tickets list page
-            router.push('/tickets/list');
+            router.push('/ticketsList');
         }, 1000);
     };
 

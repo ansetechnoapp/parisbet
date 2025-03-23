@@ -16,9 +16,7 @@ export default function Home() {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [betAmount, setBetAmount] = useState(100);
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [customNumber, setCustomNumber] = useState('');
-  const [directEntryMode, setDirectEntryMode] = useState(true);
   const [directInputNumbers, setDirectInputNumbers] = useState<string[]>([]);
   const [bets, setBets] = useState<Array<{
     betType: keyof typeof betTypes;
@@ -60,25 +58,6 @@ export default function Home() {
 
   const [selectedDraw, setSelectedDraw] = useState(availableDraws[0]);
 
-  const handleNumberClick = (number: number) => {
-    if (selectedNumbers.includes(number)) {
-      setSelectedNumbers(selectedNumbers.filter(num => num !== number));
-    } else {
-      if (selectedNumbers.length < betTypes[betType].slots) {
-        const newSelectedNumbers = [...selectedNumbers, number];
-        setSelectedNumbers(newSelectedNumbers);
-
-        // If this selection completes the bet, clear the direct input
-        if (newSelectedNumbers.length === betTypes[betType].slots) {
-          setDirectInputNumbers(Array(betTypes[betType].slots).fill(''));
-        }
-      }
-    }
-  };
-
-  const handleCustomNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomNumber(e.target.value);
-  };
 
   const handleDirectInputChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const value = e.target.value;
@@ -117,33 +96,9 @@ export default function Home() {
     }
   };
 
-  const handleCustomNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const number = parseInt(customNumber);
-      if (!isNaN(number) && number >= 1 && number <= 90 && !selectedNumbers.includes(number)) {
-        const newSelectedNumbers = [...selectedNumbers];
-        newSelectedNumbers[index] = number;
-        setSelectedNumbers(newSelectedNumbers);
-        setCustomNumber('');
-        setEditingIndex(null);
-      }
-    } else if (e.key === 'Escape') {
-      setEditingIndex(null);
-      setCustomNumber('');
-    }
-  };
-
-  const startEditing = (index: number) => {
-    if (directEntryMode) {
-      setEditingIndex(index);
-      setCustomNumber(selectedNumbers[index] ? selectedNumbers[index].toString() : '');
-    }
-  };
 
   const clearSelection = () => {
     setSelectedNumbers([]);
-    setEditingIndex(null);
     setCustomNumber('');
     setDirectInputNumbers(Array(betTypes[betType].slots).fill(''));
   };
