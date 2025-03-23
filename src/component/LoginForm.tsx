@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import {  useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
@@ -38,7 +38,6 @@ export default function LoginForm() {
     };
 
     return (
-        <Suspense fallback={<div>Loading...</div>}>
             <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8">
                     <div>
@@ -98,6 +97,5 @@ export default function LoginForm() {
                     </form>
                 </div>
             </div>
-        </Suspense>
     );
 }
