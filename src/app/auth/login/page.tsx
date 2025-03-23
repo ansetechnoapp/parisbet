@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
@@ -33,11 +33,12 @@ export default function LoginPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during login');
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
@@ -96,6 +97,8 @@ export default function LoginPage() {
           </div>
         </form>
       </div>
-    </div>
+      </div>
+      </Suspense>
+
   );
 } 
