@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr'
 
 // Use a fallback mechanism to avoid runtime errors
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -11,7 +11,7 @@ if (!SUPABASE_ANON_KEY) {
   throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
 }
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 // Database types
 export interface Match {
@@ -20,7 +20,28 @@ export interface Match {
   away_team: string;
   date: string;
   league: string;
-  status: 'scheduled' | 'live' | 'completed';
+  status: 'upcoming' | 'live' | 'finished';
+  odds: {
+    draw: number;
+    eitherTeamWin: number;
+    team1WinOrDraw: number;
+    team2WinOrDraw: number;
+  };
+  created_at: string;
+}
+
+export interface FootballBet {
+  id: string;
+  matches: Array<{
+    match_id: string;
+    bet_type: string;
+    odds: number;
+  }>;
+  stake: number;
+  total_odds: number;
+  potential_winnings: number;
+  phone_number: string;
+  status: 'pending' | 'won' | 'lost';
   created_at: string;
 }
 
@@ -132,5 +153,35 @@ export async function deleteTicket(ticketId: string) {
     .delete()
     .eq('id', ticketId);
 
+  if (error) throw error;
+}
+
+export async function placeBet(bet: Omit<FootballBet, 'id' | 'created_at'>) {
+  const { data, error } = await supabase
+    .from('football_bets')
+    .insert([bet])
+    .select();
+
+  if (error) throw error;
+  return data[0];
+}
+
+export async function getBets(phoneNumber?: string) {
+  const query = supabase
+    .from('football_bets')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (phoneNumber) {
+    query.eq('phone_number', phoneNumber);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+}
+
+export async function signOut() {
+  const { error } = await supabase.auth.signOut();
   if (error) throw error;
 }

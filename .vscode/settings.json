@@ -1,0 +1,9 @@
+{
+    "augment.completions.enableAutomaticCompletions": false,
+    "augment.completions.enableQuickSuggestions": false,
+    "augment.enableEmptyFileHint": false,
+    "augment.nextEdit.enableBackgroundSuggestions": false,
+    "augment.nextEdit.enableAutoApply": false,
+    "multiDiffEditor.experimental.enabled": false,
+    "augment.nextEdit.showDiffInHover": true
+}

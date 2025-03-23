@@ -3,40 +3,41 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create matches table
 CREATE TABLE matches (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-home_team VARCHAR(255) NOT NULL,
-away_team VARCHAR(255) NOT NULL,
-date TIMESTAMP WITH TIME ZONE NOT NULL,
-league VARCHAR(255) NOT NULL,
-status VARCHAR(20) NOT NULL CHECK (status IN ('scheduled', 'live', 'completed')),
-created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    home_team VARCHAR(255) NOT NULL,
+    away_team VARCHAR(255) NOT NULL,
+    date TIMESTAMP WITH TIME ZONE NOT NULL,
+    league VARCHAR(255) NOT NULL,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('upcoming', 'live', 'finished')),
+    odds JSONB DEFAULT '{"draw": 1.0, "eitherTeamWin": 1.0, "team1WinOrDraw": 1.0, "team2WinOrDraw": 1.0}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Create lotto_results table
 CREATE TABLE lotto_results (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-draw_time TIME NOT NULL,
-draw_date DATE NOT NULL,
-numbers INTEGER[] NOT NULL CHECK (array_length(numbers, 1) = 5),
-type VARCHAR(20) NOT NULL CHECK (type IN ('Fortune 14H', 'Fortune 18H')),
-status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'completed')),
-created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    draw_time TIME NOT NULL,
+    draw_date DATE NOT NULL,
+    numbers INTEGER[] NOT NULL CHECK (array_length(numbers, 1) = 5),
+    type VARCHAR(20) NOT NULL CHECK (type IN ('Fortune 14H', 'Fortune 18H')),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'completed')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Create tickets table
 CREATE TABLE tickets (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-ticket_number VARCHAR(20) NOT NULL UNIQUE,
-date TIMESTAMP WITH TIME ZONE NOT NULL,
-type VARCHAR(20) NOT NULL CHECK (type IN ('Poto', 'Tout chaud', '3 Nape', '4 Nape', 'Perm')),
-numbers INTEGER[] NOT NULL,
-amount DECIMAL(10,2) NOT NULL CHECK (amount >= 0),
-status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'won', 'lost')),
-phone_number VARCHAR(20) NOT NULL,
-created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ticket_number VARCHAR(20) NOT NULL UNIQUE,
+    date TIMESTAMP WITH TIME ZONE NOT NULL,
+    type VARCHAR(20) NOT NULL CHECK (type IN ('Poto', 'Tout chaud', '3 Nape', '4 Nape', 'Perm')),
+    numbers INTEGER[] NOT NULL,
+    amount DECIMAL(10,2) NOT NULL CHECK (amount >= 0),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'won', 'lost')),
+    phone_number VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Create indexes for better query performance
@@ -52,12 +53,10 @@ CREATE INDEX idx_tickets_phone_number ON tickets(phone_number);
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-NEW.updated_at = NOW();
-RETURN NEW;
+    NEW.updated_at = NOW();
+    RETURN NEW;
 END;
-
-$$
-language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
 -- Create triggers for updated_at
 CREATE TRIGGER update_matches_updated_at
@@ -75,17 +74,14 @@ CREATE TRIGGER update_tickets_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
--- Create RLS (Row Level Security) policies
+-- Enable Row Level Security (RLS)
 ALTER TABLE matches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lotto_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tickets ENABLE ROW LEVEL SECURITY;
 
--- Create policies for matches
+-- Create RLS policies for matches
 CREATE POLICY "Enable read access for all users" ON matches
     FOR SELECT USING (true);
-
--- Modify the RLS policy for matches to allow all users to insert rows
-DROP POLICY "Enable insert for authenticated users only" ON matches;
 
 CREATE POLICY "Enable insert for all users" ON matches
     FOR INSERT WITH CHECK (true);
@@ -96,7 +92,7 @@ CREATE POLICY "Enable update for authenticated users only" ON matches
 CREATE POLICY "Enable delete for authenticated users only" ON matches
     FOR DELETE USING (auth.role() = 'authenticated');
 
--- Create policies for lotto_results
+-- Create RLS policies for lotto_results
 CREATE POLICY "Enable read access for all users" ON lotto_results
     FOR SELECT USING (true);
 
@@ -109,7 +105,7 @@ CREATE POLICY "Enable update for authenticated users only" ON lotto_results
 CREATE POLICY "Enable delete for authenticated users only" ON lotto_results
     FOR DELETE USING (auth.role() = 'authenticated');
 
--- Create policies for tickets
+-- Create RLS policies for tickets
 CREATE POLICY "Enable read access for all users" ON tickets
     FOR SELECT USING (true);
 
@@ -121,3 +117,11 @@ CREATE POLICY "Enable update for authenticated users only" ON tickets
 
 CREATE POLICY "Enable delete for authenticated users only" ON tickets
     FOR DELETE USING (auth.role() = 'authenticated');
+
+-- Insert sample data into matches table
+INSERT INTO matches (home_team, away_team, date, league, status, odds)
+VALUES 
+    ('PSG', 'Marseille', NOW() + INTERVAL '2 days', 'Ligue 1', 'upcoming',
+     '{"draw": 4.20, "eitherTeamWin": 1.25, "team1WinOrDraw": 1.35, "team2WinOrDraw": 1.35}'),
+    ('Manchester City', 'Arsenal', NOW() + INTERVAL '3 days', 'Premier League', 'upcoming',
+     '{"draw": 3.50, "eitherTeamWin": 1.30, "team1WinOrDraw": 1.40, "team2WinOrDraw": 1.45}');

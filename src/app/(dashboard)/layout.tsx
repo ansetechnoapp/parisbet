@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function DashboardLayout({
   children,
@@ -10,7 +11,44 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/auth/login');
+        return;
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error checking auth:', error);
+      router.push('/auth/login');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.push('/auth/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
 
   const navItems = [
     { path: '/D', label: 'Overview', icon: 'chart-pie' },
@@ -52,8 +90,8 @@ export default function DashboardLayout({
               key={item.path}
               href={item.path}
               className={`flex items-center py-3 px-4 ${pathname === item.path
-                  ? 'bg-green-50 text-green-600 border-r-4 border-green-600'
-                  : 'text-gray-700 hover:bg-gray-50'
+                ? 'bg-green-50 text-green-600 border-r-4 border-green-600'
+                : 'text-gray-700 hover:bg-gray-50'
                 }`}
             >
               <span className="mr-3">
@@ -62,6 +100,19 @@ export default function DashboardLayout({
               {!collapsed && <span>{item.label}</span>}
             </Link>
           ))}
+
+          {/* Logout button */}
+          <button
+            onClick={handleLogout}
+            className={`flex items-center py-3 px-4 w-full text-left text-red-600 hover:bg-red-50 mt-auto`}
+          >
+            <span className="mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 6.707 6.293a1 1 0 00-1.414 1.414L8.586 11l-3.293 3.293a1 1 0 101.414 1.414L10 12.414l3.293 3.293a1 1 0 001.414-1.414L11.414 11l3.293-3.293z" clipRule="evenodd" />
+              </svg>
+            </span>
+            {!collapsed && <span>Déconnexion</span>}
+          </button>
         </nav>
       </div>
 
