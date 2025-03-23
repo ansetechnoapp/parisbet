@@ -85,8 +85,9 @@ const BetSummary: React.FC<BetSummaryProps> = ({
       // Add submission logic here
       await new Promise(resolve => setTimeout(resolve, 1000));
       // Clear form or redirect to success page
-    } catch (err) {
-      setError("Une erreur est survenue. Veuillez réessayer.");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
+      setError(`Une erreur est survenue. Veuillez réessayer. **${errorMessage}**`);
     } finally {
       setIsSubmitting(false);
     }
@@ -156,10 +157,10 @@ const BetSummary: React.FC<BetSummaryProps> = ({
               type="tel"
               placeholder="8 ou 10 chiffres"
               className={`w-full p-2 border rounded transition-colors ${error ? 'border-red-500' : phoneNumber && !validatePhoneNumber(phoneNumber)
-                  ? 'border-yellow-500'
-                  : validatePhoneNumber(phoneNumber)
-                    ? 'border-green-500'
-                    : 'border-gray-300'
+                ? 'border-yellow-500'
+                : validatePhoneNumber(phoneNumber)
+                  ? 'border-green-500'
+                  : 'border-gray-300'
                 }`}
               value={phoneNumber}
               onChange={handlePhoneChange}
@@ -185,10 +186,10 @@ const BetSummary: React.FC<BetSummaryProps> = ({
             type="submit"
             disabled={isSubmitting || !canSubmit()}
             className={`w-full py-3 rounded text-center transition-colors ${isSubmitting
-                ? 'bg-gray-400 cursor-not-allowed'
-                : canSubmit()
-                  ? 'bg-green-600 text-white hover:bg-green-700'
-                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+              ? 'bg-gray-400 cursor-not-allowed'
+              : canSubmit()
+                ? 'bg-green-600 text-white hover:bg-green-700'
+                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
               }`}
           >
             {isSubmitting ? (

@@ -12,21 +12,9 @@ interface NumberSelectorProps {
   betTypes: Record<string, BetType>;
   betExplanations: Record<string, string>;
   selectedNumbers: number[];
-  setSelectedNumbers: (numbers: number[]) => void;
-  directEntryMode: boolean;
-  setDirectEntryMode: (mode: boolean) => void;
   directInputNumbers: string[];
-  setDirectInputNumbers: (inputs: string[]) => void;
-  editingIndex: number | null;
-  setEditingIndex: (index: number | null) => void;
-  customNumber: string;
-  setCustomNumber: (value: string) => void;
-  handleNumberClick: (number: number) => void;
-  handleCustomNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDirectInputChange: (e: React.ChangeEvent<HTMLInputElement>, index: number) => void;
   handleDirectInputKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, index: number) => void;
-  handleCustomNumberKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, index: number) => void;
-  startEditing: (index: number) => void;
   clearSelection: () => void;
 }
 
@@ -35,21 +23,9 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
   betTypes,
   betExplanations,
   selectedNumbers,
-  setSelectedNumbers,
-  directEntryMode,
-  setDirectEntryMode,
   directInputNumbers,
-  setDirectInputNumbers,
-  editingIndex,
-  setEditingIndex,
-  customNumber,
-  setCustomNumber,
-  handleNumberClick,
-  handleCustomNumberChange,
   handleDirectInputChange,
   handleDirectInputKeyDown,
-  handleCustomNumberKeyDown,
-  startEditing,
   clearSelection
 }) => {
   const getTotalSlots = (type: string) => {

@@ -209,21 +209,9 @@ export default function Home() {
             betTypes={betTypes}
             betExplanations={betExplanations}
             selectedNumbers={selectedNumbers}
-            setSelectedNumbers={setSelectedNumbers}
-            directEntryMode={directEntryMode}
-            setDirectEntryMode={setDirectEntryMode}
             directInputNumbers={directInputNumbers}
-            setDirectInputNumbers={setDirectInputNumbers}
-            editingIndex={editingIndex}
-            setEditingIndex={setEditingIndex}
-            customNumber={customNumber}
-            setCustomNumber={setCustomNumber}
-            handleNumberClick={handleNumberClick}
-            handleCustomNumberChange={handleCustomNumberChange}
             handleDirectInputChange={handleDirectInputChange}
             handleDirectInputKeyDown={handleDirectInputKeyDown}
-            handleCustomNumberKeyDown={handleCustomNumberKeyDown}
-            startEditing={startEditing}
             clearSelection={clearSelection}
           />
 

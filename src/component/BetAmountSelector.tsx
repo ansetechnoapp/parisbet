@@ -1,6 +1,5 @@
 'use client';
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { FaInfoCircle } from 'react-icons/fa';
+import React from 'react';
 
 interface BetAmountSelectorProps {
   betAmount: number;
