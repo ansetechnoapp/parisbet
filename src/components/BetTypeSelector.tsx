@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { FaInfoCircle } from 'react-icons/fa';
+import { BetTypeKey } from '@/lib/supabase';
 
 interface BetType {
   slots: number;
@@ -8,9 +9,9 @@ interface BetType {
 }
 
 interface BetTypeSelectorProps {
-  betType: string;
-  setBetType: (type: string) => void;
-  betTypes: Record<string, BetType>;
+  betType: BetTypeKey;
+  setBetType: (type: BetTypeKey) => void;
+  betTypes: Record<BetTypeKey, BetType>;
   betExplanations: Record<string, string>;
   setSelectedNumbers: (numbers: number[]) => void;
 }
@@ -54,7 +55,7 @@ const BetTypeSelector: React.FC<BetTypeSelectorProps> = ({
             <div className="inline-flex items-center" key={type}>
               <button
                 onClick={() => {
-                  setBetType(type);
+                  setBetType(type as BetTypeKey);
                   setSelectedNumbers([]);
                 }}
                 className={`px-3 py-1 md:px-4 md:py-2 text-sm md:text-base rounded-full ${

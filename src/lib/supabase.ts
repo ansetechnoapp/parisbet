@@ -13,6 +13,9 @@ if (!SUPABASE_ANON_KEY) {
 
 export const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
 
+// Shared types
+export type BetTypeKey = 'Poto' | 'Tout chaud' | '3 Nape' | '4 Nape' | 'Perm';
+
 // Database types
 export interface Match {
   id: string;
@@ -59,12 +62,22 @@ export interface Ticket {
   id: string;
   ticket_number: string;
   date: string;
-  type: 'Poto' | 'Tout chaud' | '3 Nape' | '4 Nape' | 'Perm';
+  type: BetTypeKey;
   numbers: number[];
   amount: number;
   status: 'pending' | 'won' | 'lost';
   phone_number: string;
   created_at: string;
+}
+
+export interface CreateTicketData {
+  ticket_number: string;
+  date: string;
+  type: BetTypeKey;
+  numbers: number[];
+  amount: number;
+  status: 'pending' | 'won' | 'lost';
+  phone_number: string;
 }
 
 // Database functions
@@ -111,16 +124,6 @@ export async function getTicketsByPhoneNumber(phoneNumber: string) {
     throw error;
   }
   return data || [];
-}
-
-export interface CreateTicketData {
-  ticket_number: string;
-  date: string;
-  type: 'Poto' | 'Tout chaud' | '3 Nape' | '4 Nape' | 'Perm';
-  numbers: number[];
-  amount: number;
-  status: 'pending' | 'won' | 'lost';
-  phone_number: string;
 }
 
 export async function createTicket(ticketData: CreateTicketData): Promise<Ticket> {

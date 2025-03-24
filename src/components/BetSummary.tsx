@@ -3,6 +3,8 @@ import { createTicket } from '@/lib/supabase';
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import Image from 'next/image';
+import { BetTypeKey } from '@/lib/supabase';
 
 interface BetType {
   slots: number;
@@ -11,13 +13,13 @@ interface BetType {
 
 interface BetSummaryProps {
   betAmount: number;
-  betType: string;
-  betTypes: Record<string, BetType>;
+  betType: BetTypeKey;
+  betTypes: Record<BetTypeKey, BetType>;
   selectedNumbers: number[];
   phoneNumber: string;
   setPhoneNumber: (value: string) => void;
   bets: Array<{
-    betType: string;
+    betType: BetTypeKey;
     selectedNumbers: number[];
     betAmount: number;
   }>;
@@ -87,7 +89,7 @@ const BetSummary: React.FC<BetSummaryProps> = ({
       phone_number: phoneNumber,
       ticket_number: `TKT-${Date.now()}`,
       date: new Date().toISOString(),
-      type: betType as 'Poto' | 'Tout chaud' | '3 Nape' | '4 Nape' | 'Perm',
+      type: betType,
       numbers: bets.flatMap(bet => bet.selectedNumbers),
       amount: calculateTotalAmount(),
       status: 'pending'
@@ -190,9 +192,9 @@ const BetSummary: React.FC<BetSummaryProps> = ({
           </div>
 
           <div className="flex justify-between mb-4">
-            <img src="/mtn.png" alt="MTN" className="h-8" />
-            <img src="/Moov_Africa_logo.png" alt="Moov" className="h-8" />
-            <img src="/celtis.jpg" alt="Celtis" className="h-8" />
+            <Image src="/mtn.png" alt="MTN" width={32} height={32} className="h-8 w-auto" />
+            <Image src="/Moov_Africa_logo.png" alt="Moov" width={32} height={32} className="h-8 w-auto" />
+            <Image src="/celtis.jpg" alt="Celtis" width={32} height={32} className="h-8 w-auto" />
           </div>
 
           <button

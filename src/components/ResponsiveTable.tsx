@@ -50,13 +50,13 @@ export function TableCell({ children, className = '' }: { children: ReactNode, c
 }
 
 // Mobile-friendly table alternative for very small screens
-export function CardList({ 
+export function CardList<T>({ 
   data, 
   renderItem, 
   className = '' 
 }: { 
-  data: any[], 
-  renderItem: (item: any, index: number) => ReactNode,
+  data: T[], 
+  renderItem: (item: T, index: number) => ReactNode,
   className?: string 
 }) {
   return (

@@ -10,30 +10,38 @@ import NumberSelector from '@/components/NumberSelector';
 import MultipleBet from '@/components/MultipleBet';
 import BetSummary from '@/components/BetSummary';
 import Footer from '@/components/Footer';
+import { BetTypeKey } from '@/lib/supabase';
+
+// Define bet types in a separate object with proper typing
+type BetTypeInfo = {
+  slots: number;
+  description: string;
+};
+type BetTypesMap = Record<BetTypeKey, BetTypeInfo>;
 
 export default function Home() {
-  const [betType, setBetType] = useState<keyof typeof betTypes>('Poto');
-  const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
-  const [betAmount, setBetAmount] = useState(100);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [directInputNumbers, setDirectInputNumbers] = useState<string[]>([]);
-  const [bets, setBets] = useState<Array<{
-    betType: keyof typeof betTypes;
-    selectedNumbers: number[];
-    betAmount: number;
-  }>>([]);
-
   // Types de paris disponibles et leurs configurations
-  const betTypes = {
+  const betTypes: BetTypesMap = {
     'Poto': { slots: 1, description: 'Choisissez un numéro et pariez qu\'il sera le premier tiré' },
     'Tout chaud': { slots: 2, description: 'Choisissez deux numéros parmi les cinq tirés' },
     '3 Nape': { slots: 3, description: 'Choisissez trois numéros parmi les cinq tirés' },
     '4 Nape': { slots: 4, description: 'Choisissez quatre numéros parmi les cinq tirés' },
     'Perm': { slots: 5, description: 'Choisissez cinq numéros et pariez sur toutes les combinaisons possibles' },
   };
+  
+  const [betType, setBetType] = useState<BetTypeKey>('Poto');
+  const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
+  const [betAmount, setBetAmount] = useState(100);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [directInputNumbers, setDirectInputNumbers] = useState<string[]>([]);
+  const [bets, setBets] = useState<Array<{
+    betType: BetTypeKey;
+    selectedNumbers: number[];
+    betAmount: number;
+  }>>([]);
 
   // Ajout d'explications pour chaque type de pari
-  const betExplanations: { [key: string]: string } = {
+  const betExplanations: Record<string, string> = {
     "Poto": "Règle : Parmi les 5 numéros gagnants, il faut nécessairement trouver le premier numéro. Mise : 50 F, Gain : 2 500 F",
     "Tout chaud": "Règle : Miser sur 2 numéros parmi les 5 numéros gagnants, quelle que soit leur position. Mise : 50 F, Gain : 3 000 F",
     "3 Nape": "Règle : Miser sur 3 numéros parmi les 5 numéros gagnants, quelle que soit leur position. Mise : 50 F, Gain : 4 000 F",
@@ -122,7 +130,7 @@ export default function Home() {
   useEffect(() => {
     // Initialize empty inputs when bet type changes
     setDirectInputNumbers(Array(betTypes[betType].slots).fill(''));
-  }, [betType]);
+  }, [betType, betTypes]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50">
@@ -151,7 +159,7 @@ export default function Home() {
 
           <BetTypeSelector
             betType={betType}
-            setBetType={setBetType as (type: string) => void}
+            setBetType={setBetType}
             betTypes={betTypes}
             betExplanations={betExplanations}
             setSelectedNumbers={setSelectedNumbers}
