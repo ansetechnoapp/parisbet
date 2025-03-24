@@ -123,12 +123,12 @@ export default function MatchesPage() {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Matches Management</h1>
+    <div className="max-w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4 sm:gap-0">
+        <h1 className="text-xl sm:text-2xl font-bold">Matches Management</h1>
         <button
           onClick={() => setShowAddForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="bg-blue-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-700 text-sm sm:text-base w-full sm:w-auto"
         >
           Add New Match
         </button>
@@ -136,15 +136,25 @@ export default function MatchesPage() {
 
       {/* Add Match Form */}
       {showAddForm && (
-        <div className="bg-white p-6 rounded-lg shadow mb-6">
-          <h2 className="text-xl font-semibold mb-4">Add New Match</h2>
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow mb-6 overflow-hidden">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold">Add New Match</h2>
+            <button 
+              onClick={() => setShowAddForm(false)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
           {formErrors.submit && (
             <div className="bg-red-50 text-red-500 p-3 rounded mb-4">
               {formErrors.submit}
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Home Team</label>
                 <input
@@ -213,71 +223,79 @@ export default function MatchesPage() {
                   <p className="mt-1 text-sm text-red-500">{formErrors.league}</p>
                 )}
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Odds</label>
-                <div className="grid grid-cols-2 gap-2 mt-1">
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="1"
-                    placeholder="Draw"
-                    value={newMatch.odds?.draw}
-                    onChange={(e) => setNewMatch({
-                      ...newMatch,
-                      odds: { ...newMatch.odds as MatchOdds, draw: parseFloat(e.target.value) }
-                    })}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="1"
-                    placeholder="Either Team Win"
-                    value={newMatch.odds?.eitherTeamWin}
-                    onChange={(e) => setNewMatch({
-                      ...newMatch,
-                      odds: { ...newMatch.odds as MatchOdds, eitherTeamWin: parseFloat(e.target.value) }
-                    })}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="1"
-                    placeholder="Team 1 Win/Draw"
-                    value={newMatch.odds?.team1WinOrDraw}
-                    onChange={(e) => setNewMatch({
-                      ...newMatch,
-                      odds: { ...newMatch.odds as MatchOdds, team1WinOrDraw: parseFloat(e.target.value) }
-                    })}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="1"
-                    placeholder="Team 2 Win/Draw"
-                    value={newMatch.odds?.team2WinOrDraw}
-                    onChange={(e) => setNewMatch({
-                      ...newMatch,
-                      odds: { ...newMatch.odds as MatchOdds, team2WinOrDraw: parseFloat(e.target.value) }
-                    })}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Odds</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+                  <div>
+                    <span className="text-xs text-gray-500 block mb-1">Draw</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="1"
+                      value={newMatch.odds?.draw}
+                      onChange={(e) => setNewMatch({
+                        ...newMatch,
+                        odds: { ...newMatch.odds as MatchOdds, draw: parseFloat(e.target.value) }
+                      })}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500 block mb-1">Either Team Win</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="1"
+                      value={newMatch.odds?.eitherTeamWin}
+                      onChange={(e) => setNewMatch({
+                        ...newMatch,
+                        odds: { ...newMatch.odds as MatchOdds, eitherTeamWin: parseFloat(e.target.value) }
+                      })}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500 block mb-1">Team 1 Win/Draw</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="1"
+                      value={newMatch.odds?.team1WinOrDraw}
+                      onChange={(e) => setNewMatch({
+                        ...newMatch,
+                        odds: { ...newMatch.odds as MatchOdds, team1WinOrDraw: parseFloat(e.target.value) }
+                      })}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500 block mb-1">Team 2 Win/Draw</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="1"
+                      value={newMatch.odds?.team2WinOrDraw}
+                      onChange={(e) => setNewMatch({
+                        ...newMatch,
+                        odds: { ...newMatch.odds as MatchOdds, team2WinOrDraw: parseFloat(e.target.value) }
+                      })}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="flex justify-end space-x-4">
+            <div className="flex justify-end mt-4 space-x-3">
               <button
                 type="button"
                 onClick={() => setShowAddForm(false)}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
               >
                 Add Match
               </button>

@@ -14,6 +14,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -59,8 +60,8 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100">
+      {/* Desktop Sidebar */}
       <div
         className={`bg-white shadow-lg ${collapsed ? 'w-16' : 'w-64'
           } transition-all duration-300 hidden md:block`}
@@ -116,20 +117,74 @@ export default function DashboardLayout({
         </nav>
       </div>
 
-      {/* Mobile nav bar */}
+      {/* Mobile header and menu */}
       <div className="md:hidden bg-white w-full shadow-md">
         <div className="flex justify-between items-center p-4">
           <h1 className="text-xl font-bold text-green-600">Parisbet</h1>
-          <button className="text-gray-600">
+          <button 
+            className="text-gray-600"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
         </div>
+        
+        {/* Mobile Menu Drawer */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 z-50 bg-gray-800 bg-opacity-75 flex">
+            <div className="bg-white w-64 h-full overflow-y-auto">
+              <div className="p-4 flex justify-between items-center border-b">
+                <h1 className="text-xl font-bold text-green-600">Parisbet Admin</h1>
+                <button 
+                  className="text-gray-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <nav className="mt-2">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    href={item.path}
+                    className={`flex items-center py-3 px-4 ${
+                      pathname === item.path
+                        ? 'bg-green-50 text-green-600 border-l-4 border-green-600'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="mr-3">
+                      <SidebarIcon name={item.icon} />
+                    </span>
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+                
+                {/* Mobile Logout button */}
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center py-3 px-4 w-full text-left text-red-600 hover:bg-red-50 mt-4 border-t"
+                >
+                  <span className="mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 6.707 6.293a1 1 0 00-1.414 1.414L8.586 11l-3.293 3.293a1 1 0 101.414 1.414L10 12.414l3.293 3.293a1 1 0 001.414-1.414L11.414 11l3.293-3.293z" clipRule="evenodd" />
+                    </svg>
+                  </span>
+                  <span>Déconnexion</span>
+                </button>
+              </nav>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-auto p-6 md:p-8">
+      <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 pt-6">
         {children}
       </div>
     </div>
