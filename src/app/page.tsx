@@ -1,15 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import NavBar from '@/component/NavBar';
-import WarningBanner from '@/component/WarningBanner';
-import DrawSelector from '@/component/DrawSelector';
-import BetAmountSelector from '@/component/BetAmountSelector';
-import BetTypeSelector from '@/component/BetTypeSelector';
-import NumberSelector from '@/component/NumberSelector';
-import MultipleBet from '@/component/MultipleBet';
-import BetSummary from '@/component/BetSummary';
-import Footer from '@/component/Footer';
+import NavBar from '@/components/NavBar';
+import WarningBanner from '@/components/WarningBanner';
+import DrawSelector from '@/components/DrawSelector';
+import BetAmountSelector from '@/components/BetAmountSelector';
+import BetTypeSelector from '@/components/BetTypeSelector';
+import NumberSelector from '@/components/NumberSelector';
+import MultipleBet from '@/components/MultipleBet';
+import BetSummary from '@/components/BetSummary';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   const [betType, setBetType] = useState<keyof typeof betTypes>('Poto');

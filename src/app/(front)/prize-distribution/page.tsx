@@ -1,15 +1,15 @@
 'use client';
 import React from 'react';
-import NavBar from '@/component/NavBar';
+import NavBar from '@/components/NavBar';
 
 export default function PrizeDistribution() {
   return (
     <div className="min-h-screen bg-gray-50">
       <NavBar />
-      
+
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Distribution des gains</h1>
-        
+
         {/* Prize Categories */}
         <section className="mb-12">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">Catégories de gains</h2>

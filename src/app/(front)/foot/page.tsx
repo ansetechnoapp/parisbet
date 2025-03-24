@@ -1,7 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import NavBar from '@/component/NavBar';
+import NavBar from '@/components/NavBar';
 import { Match, getMatches, placeBet, FootballBet } from '@/lib/supabase';
+import { Input } from '@/components/ui/input';
 
 interface League {
   id: string;
@@ -160,8 +161,8 @@ export default function FootballBetting() {
               <button
                 onClick={() => setSelectedLeague('all')}
                 className={`px-6 py-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md ${selectedLeague === 'all'
-                    ? 'bg-green-600 text-white font-medium transform scale-105'
-                    : 'bg-white hover:bg-green-50'
+                  ? 'bg-green-600 text-white font-medium transform scale-105'
+                  : 'bg-white hover:bg-green-50'
                   }`}
               >
                 Tous les championnats
@@ -171,8 +172,8 @@ export default function FootballBetting() {
                   key={league.id}
                   onClick={() => setSelectedLeague(league.id)}
                   className={`px-6 py-3 rounded-xl flex items-center space-x-3 transition-all duration-200 shadow-sm hover:shadow-md ${selectedLeague === league.id
-                      ? 'bg-green-600 text-white font-medium transform scale-105'
-                      : 'bg-white hover:bg-green-50'
+                    ? 'bg-green-600 text-white font-medium transform scale-105'
+                    : 'bg-white hover:bg-green-50'
                     }`}
                 >
                   <span className="text-xl">{league.flag}</span>
@@ -237,8 +238,8 @@ export default function FootballBetting() {
                           key={bet.code}
                           onClick={() => handleBetClick(match.id, bet.code, bet.value)}
                           className={`bg-gray-50 hover:bg-green-50 p-4 rounded-xl transition-all duration-200 hover:shadow-sm group ${betSlip.some(b => b.matchId === match.id && b.type === bet.code)
-                              ? 'ring-2 ring-green-500 bg-green-50'
-                              : ''
+                            ? 'ring-2 ring-green-500 bg-green-50'
+                            : ''
                             }`}
                         >
                           <div className="text-xs text-gray-500 group-hover:text-green-600 mb-1">
@@ -309,7 +310,7 @@ export default function FootballBetting() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Numéro de téléphone
                     </label>
-                    <input
+                    <Input
                       type="tel"
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}

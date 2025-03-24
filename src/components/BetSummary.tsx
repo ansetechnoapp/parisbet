@@ -1,6 +1,8 @@
 'use client';
 import { createTicket } from '@/lib/supabase';
 import React, { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface BetType {
   slots: number;
@@ -161,10 +163,10 @@ const BetSummary: React.FC<BetSummaryProps> = ({
 
         <form onSubmit={handleSubmit} className="mt-6">
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <Label className="block text-sm font-medium text-gray-700 mb-2">
               Numéro de téléphone
-            </label>
-            <input
+            </Label>
+            <Input
               type="tel"
               placeholder="8 ou 10 chiffres"
               className={`w-full p-2 border rounded transition-colors ${error ? 'border-red-500' : phoneNumber && !validatePhoneNumber(phoneNumber)

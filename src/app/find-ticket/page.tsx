@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Ticket, getTicketById } from '@/lib/supabase';
+import { Input } from '@/components/ui/input';
 
 export default function FindTicketPage() {
     const [ticketId, setTicketId] = useState('');
@@ -71,7 +72,7 @@ export default function FindTicketPage() {
                                 <label htmlFor="ticketId" className="block text-sm font-medium text-gray-700 mb-1">
                                     ID du ticket
                                 </label>
-                                <input
+                                <Input
                                     type="text"
                                     id="ticketId"
                                     value={ticketId}

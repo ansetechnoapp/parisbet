@@ -1,21 +1,21 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
-import NavBar from '@/component/NavBar';
+import NavBar from '@/components/NavBar';
 
 export default function HowToPlay() {
   return (
     <div className="min-h-screen bg-gray-50">
       <NavBar />
-      
+
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Comment jouer</h1>
-        
+
         {/* Quick Start Guide */}
         <section className="mb-12">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">Guide rapide</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="bg-white rounded-xl shadow-sm p-6 transition-shadow hover:shadow-md">
@@ -25,7 +25,7 @@ export default function HowToPlay() {
                 Sélectionnez entre le Loto ou les Paris Sportifs selon vos préférences.
               </p>
             </motion.div>
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="bg-white rounded-xl shadow-sm p-6 transition-shadow hover:shadow-md">
@@ -35,7 +35,7 @@ export default function HowToPlay() {
                 Choisissez vos numéros ou vos équipes et définissez votre mise.
               </p>
             </motion.div>
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="bg-white rounded-xl shadow-sm p-6 transition-shadow hover:shadow-md">

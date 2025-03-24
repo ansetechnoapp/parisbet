@@ -1,5 +1,7 @@
 'use client';
 import React from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { FaInfoCircle } from 'react-icons/fa';
 
 interface BetType {
@@ -76,19 +78,19 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({
             const isFilled = selectedNumbers[index] !== undefined;
             return (
               <div key={index} className="flex flex-col items-center">
-                <label className={`text-xs mb-0.5 ${isDisabled ? 'text-gray-400' : 'text-gray-500'}`}>
+                <Label className={`text-xs mb-0.5 ${isDisabled ? 'text-gray-400' : 'text-gray-500'}`}>
                   N°{index + 1}
-                </label>
+                </Label>
                 <div className="relative w-full">
-                  <input
+                  <Input
                     id={`direct-input-${index}`}
                     type="number"
                     min="1"
                     max="90"
                     placeholder={isDisabled ? "X" : "1-90"}
                     value={directInputNumbers[index] || ''}
-                    onChange={(e) => handleDirectInputChange(e, index)}
-                    onKeyDown={(e) => handleDirectInputKeyDown(e, index)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDirectInputChange(e, index)}
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => handleDirectInputKeyDown(e, index)}
                     disabled={isDisabled}
                     className={`w-full h-20 p-1 border rounded-full text-center focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg font-medium
                       ${isDisabled

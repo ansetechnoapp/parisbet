@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getTicketsByPhoneNumber } from '@/lib/supabase';
+import { Input } from '@/components/ui/input';
 
 export default function VerifyPhonePage() {
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -67,7 +68,7 @@ export default function VerifyPhonePage() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <input
+                        <Input
                             type="text"
                             id="phone"
                             value={phoneNumber}

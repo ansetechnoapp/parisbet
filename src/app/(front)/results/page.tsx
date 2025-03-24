@@ -1,7 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import NavBar from '@/component/NavBar';
+import NavBar from '@/components/NavBar';
 import { getLottoResults, LottoResult } from '@/lib/supabase';
+import { Input } from '@/components/ui/input';
 
 export default function Results() {
   const [results, setResults] = useState<LottoResult[]>([]);
@@ -65,19 +66,19 @@ export default function Results() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
-              <input
+              <Input
                 type="date"
                 value={filters.startDate}
-                onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                onChange={(e: any) => handleFilterChange('startDate', e.target.value)}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Date de fin</label>
-              <input
+              <Input
                 type="date"
                 value={filters.endDate}
-                onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                onChange={(e: any) => handleFilterChange('endDate', e.target.value)}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
               />
             </div>
@@ -85,7 +86,7 @@ export default function Results() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Type de tirage</label>
               <select
                 value={filters.type}
-                onChange={(e) => handleFilterChange('type', e.target.value)}
+                onChange={(e: any) => handleFilterChange('type', e.target.value)}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
               >
                 <option value="all">Tous les tirages</option>
