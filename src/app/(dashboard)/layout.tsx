@@ -51,11 +51,11 @@ export default function DashboardLayout({
   }
 
   const navItems = [
-    { path: '/D', label: 'Overview', icon: 'chart-pie' },
-    { path: '/D/matches', label: 'Matches', icon: 'football' },
-    { path: '/D/tickets', label: 'Tickets', icon: 'ticket' },
-    { path: '/D/ticketsListAdmin', label: 'Ticket List', icon: 'list' },
-    { path: '/D/lotto', label: 'Lotto', icon: 'lottery' },
+    { path: '/Overview', label: 'Overview', icon: 'chart-pie' },
+    { path: '/matchesAdmin', label: 'Matches', icon: 'football' },
+    { path: '/ticketsAdmin', label: 'Tickets', icon: 'ticket' },
+    { path: '/ticketsListAdmin', label: 'Ticket List', icon: 'list' },
+    { path: '/lottoAdmin', label: 'Lotto', icon: 'lottery' },
   ];
 
   return (
