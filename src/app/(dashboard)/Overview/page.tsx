@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, Metric, Text, Title, AreaChart, BarChart, DonutChart, Grid, Flex, Badge, Button, Tab, TabGroup, TabList, TabPanel, TabPanels } from '@tremor/react';
-import { Ticket, Users, Trophy, DollarSign, Activity, Calendar, ChevronRight } from 'lucide-react';
+import { Ticket, Trophy, DollarSign, Activity, Calendar, ChevronRight } from 'lucide-react';
 
 interface DashboardStats {
   totalTickets: number;

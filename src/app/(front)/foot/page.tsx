@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import NavBar from '@/components/NavBar';
 import { Match, getMatches, placeBet, FootballBet } from '@/lib/supabase';
 import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 
 interface League {
   id: string;
@@ -340,8 +341,8 @@ export default function FootballBetting() {
                 )}
 
                 <div className="flex items-center justify-center space-x-4 mb-4">
-                  <img src="/mtn.png" alt="MTN Money" className="h-8" />
-                  <img src="/Moov_Africa_logo.png" alt="Moov Money" className="h-8" />
+                  <Image src="/mtn.png" alt="MTN Money" width={32} height={32} className="h-8 w-auto" />
+                  <Image src="/Moov_Africa_logo.png" alt="Moov Money" width={32} height={32} className="h-8 w-auto" />
                 </div>
 
                 <button

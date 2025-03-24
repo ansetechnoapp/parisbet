@@ -69,7 +69,7 @@ export default function Results() {
               <Input
                 type="date"
                 value={filters.startDate}
-                onChange={(e: any) => handleFilterChange('startDate', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFilterChange('startDate', e.target.value)}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
               />
             </div>
@@ -78,7 +78,7 @@ export default function Results() {
               <Input
                 type="date"
                 value={filters.endDate}
-                onChange={(e: any) => handleFilterChange('endDate', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFilterChange('endDate', e.target.value)}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
               />
             </div>
@@ -86,7 +86,7 @@ export default function Results() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Type de tirage</label>
               <select
                 value={filters.type}
-                onChange={(e: any) => handleFilterChange('type', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('type', e.target.value)}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
               >
                 <option value="all">Tous les tirages</option>

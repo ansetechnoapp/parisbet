@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import NavBar from '@/components/NavBar';
 import WarningBanner from '@/components/WarningBanner';
@@ -21,13 +21,13 @@ type BetTypesMap = Record<BetTypeKey, BetTypeInfo>;
 
 export default function Home() {
   // Types de paris disponibles et leurs configurations
-  const betTypes: BetTypesMap = {
+  const betTypes: BetTypesMap = useMemo(() => ({
     'Poto': { slots: 1, description: 'Choisissez un numéro et pariez qu\'il sera le premier tiré' },
     'Tout chaud': { slots: 2, description: 'Choisissez deux numéros parmi les cinq tirés' },
     '3 Nape': { slots: 3, description: 'Choisissez trois numéros parmi les cinq tirés' },
     '4 Nape': { slots: 4, description: 'Choisissez quatre numéros parmi les cinq tirés' },
     'Perm': { slots: 5, description: 'Choisissez cinq numéros et pariez sur toutes les combinaisons possibles' },
-  };
+  }), []);
   
   const [betType, setBetType] = useState<BetTypeKey>('Poto');
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
