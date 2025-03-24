@@ -2,6 +2,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 export default function NavBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -78,40 +80,70 @@ export default function NavBar() {
         </button>
 
         {/* Ticket access dropdown */}
-        <div ref={dropdownRef} className="hidden md:block relative">
-          <button
-            onClick={() => setIsTicketDropdownOpen(!isTicketDropdownOpen)}
-            className="flex items-center gap-1 bg-green-600 hover:bg-green-700 transition-colors text-white px-6 py-2 rounded-full font-medium shadow-lg shadow-green-200"
-          >
-            Mes tickets
-            <svg className={`w-4 h-4 transition-transform ${isTicketDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button
+              className="flex items-center gap-1 bg-green-600 hover:bg-green-700 transition-colors text-white px-6 py-2 rounded-full font-medium shadow-lg shadow-green-200"
+            >
+              Mes tickets
+              <motion.svg
+                animate={{ rotate: isTicketDropdownOpen ? 180 : 0 }}
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </motion.svg>
+            </button>
+          </DropdownMenu.Trigger>
 
-          {isTicketDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-1 z-50">
-              <Link
-                href="/verify-phone"
-                className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600"
+          <AnimatePresence>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                className="min-w-[220px] bg-white rounded-lg shadow-xl py-1 z-50"
+                sideOffset={5}
               >
-                Accès par numéro
-              </Link>
-              <Link
-                href="/find-ticket"
-                className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600"
-              >
-                Rechercher un ticket
-              </Link>
-            </div>
-          )}
-        </div>
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <DropdownMenu.Item className="outline-none">
+                    <Link
+                      href="/verify-phone"
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600"
+                    >
+                      Accès par numéro
+                    </Link>
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item className="outline-none">
+                    <Link
+                      href="/find-ticket"
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600"
+                    >
+                      Rechercher un ticket
+                    </Link>
+                  </DropdownMenu.Item>
+                </motion.div>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </AnimatePresence>
+        </DropdownMenu.Root>
       </div>
 
       {/* Menu mobile */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-green-100">
-          <nav className="flex flex-col py-2">
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden bg-white border-t border-green-100"
+          >
+            <nav className="flex flex-col py-2">
             <Link
               href="/"
               className={`px-4 py-2 ${pathname === '/' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
@@ -155,8 +187,9 @@ export default function NavBar() {
               Rechercher un ticket par ID
             </Link>
           </nav>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

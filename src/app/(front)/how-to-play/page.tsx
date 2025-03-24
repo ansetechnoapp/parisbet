@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { motion } from 'framer-motion';
 import NavBar from '@/component/NavBar';
 
 export default function HowToPlay() {
@@ -14,27 +15,36 @@ export default function HowToPlay() {
         <section className="mb-12">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">Guide rapide</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-white rounded-xl shadow-sm p-6 transition-shadow hover:shadow-md">
               <div className="text-3xl mb-4">1️⃣</div>
               <h3 className="font-medium text-gray-800 mb-2">Choisissez votre jeu</h3>
               <p className="text-gray-600">
                 Sélectionnez entre le Loto ou les Paris Sportifs selon vos préférences.
               </p>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-white rounded-xl shadow-sm p-6 transition-shadow hover:shadow-md">
               <div className="text-3xl mb-4">2️⃣</div>
               <h3 className="font-medium text-gray-800 mb-2">Placez votre pari</h3>
               <p className="text-gray-600">
                 Choisissez vos numéros ou vos équipes et définissez votre mise.
               </p>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-white rounded-xl shadow-sm p-6 transition-shadow hover:shadow-md">
               <div className="text-3xl mb-4">3️⃣</div>
               <h3 className="font-medium text-gray-800 mb-2">Recevez vos gains</h3>
               <p className="text-gray-600">
                 Si vous gagnez, les gains sont automatiquement versés sur votre compte.
               </p>
-            </div>
+            </motion.div>
           </div>
         </section>
 
