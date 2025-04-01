@@ -9,16 +9,36 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { getRedirectPath } from '@/lib/auth';
 
 function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirectPath = searchParams.get('redirect') || '/';
-    const { loadUser } = useUserStore();
+    const { loadUser, user } = useUserStore();
 
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    // Check authentication state
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user) {
+                    const finalRedirectPath = getRedirectPath(session.user);
+                    router.push(finalRedirectPath);
+                }
+            } catch (error) {
+                console.error('Error checking auth:', error);
+            }
+        };
+        
+        if (!user) {
+            checkAuth();
+        }
+    }, [user, router]);
 
     useEffect(() => {
         // Check for message parameter to show toast
@@ -35,7 +55,7 @@ function LoginForm() {
         setLoading(true);
 
         try {
-            const { error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password
             });
@@ -45,12 +65,15 @@ function LoginForm() {
             // Successfully logged in, load user data
             await loadUser();
 
-            // Redirect to the requested page or home
+            // Get the appropriate redirect path based on user role
+            const finalRedirectPath = data.user ? getRedirectPath(data.user) : redirectPath;
+
+            // Redirect to the appropriate page
             toast.success("Connexion réussie", {
                 description: "Vous êtes maintenant connecté"
             });
 
-            router.push(redirectPath);
+            router.push(finalRedirectPath);
         } catch (error) {
             console.error('Error signing in:', error);
             toast.error("Échec de connexion", {
@@ -95,7 +118,7 @@ function LoginForm() {
                             className="w-full bg-primary"
                             disabled={loading}
                         >
-                            {loading ? 'Connexion en cours...' : 'Se connecter'}
+                            {loading ? "Connexion en cours..." : "Se connecter"}
                         </Button>
                     </div>
                 </form>

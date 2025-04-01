@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase, UserProfile, Transaction } from './supabase';
+import { isAdmin } from './auth';
 
 interface UserState {
-  user: { id: string } | null;
+  user: { id: string; isAdmin: boolean } | null;
   profile: UserProfile | null;
   transactions: Transaction[];
   pendingBet: {
@@ -47,7 +48,16 @@ export const useUserStore = create<UserState>()(
         try {
           set({ isLoading: true, error: null });
           const { data } = await supabase.auth.getSession();
-          set({ user: data.session?.user || null, isLoading: false, initialized: true });
+          const user = data.session?.user || null;
+          
+          set({ 
+            user: user ? { 
+              id: user.id, 
+              isAdmin: isAdmin(user) 
+            } : null, 
+            isLoading: false, 
+            initialized: true 
+          });
 
           // If there's a user, also load their profile
           if (data.session?.user) {
@@ -123,15 +133,24 @@ export const useUserStore = create<UserState>()(
 
       logout: async () => {
         try {
-          await supabase.auth.signOut();
+          // First clear the store state
           set({
             user: null,
             profile: null,
             transactions: [],
-            pendingBet: null
+            pendingBet: null,
+            initialized: false  // Reset initialized state
           });
+          
+          // Then sign out from Supabase
+          await supabase.auth.signOut();
+          
+          // Clear any persisted storage
+          localStorage.removeItem('user-storage');
+          
         } catch (error) {
           console.error('Error logging out:', error);
+          throw error; // Propagate the error to handle it in the UI
         }
       }
     }),

@@ -1,10 +1,12 @@
 {
     "augment.completions.enableAutomaticCompletions": false,
     "augment.completions.enableQuickSuggestions": false,
-    "augment.enableEmptyFileHint": true,
+    "augment.enableEmptyFileHint": false,
     "augment.nextEdit.enableBackgroundSuggestions": false,
     "augment.nextEdit.enableAutoApply": false,
     "multiDiffEditor.experimental.enabled": false,
-    "augment.nextEdit.showDiffInHover": true,
-    "emmet.showAbbreviationSuggestions": true
+    "augment.nextEdit.showDiffInHover": false,
+    "emmet.showAbbreviationSuggestions": true,
+    "accessibility.verbosity.diffEditorActive": false,
+    "augment.conflictingCodingAssistantCheck": false
 }

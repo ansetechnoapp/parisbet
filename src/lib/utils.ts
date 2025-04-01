@@ -7,14 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  
-  // Format: Month Day, Year at Hour:Minute AM/PM
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
+
+  // Format: Day Month Year à Hour:Minute (format français)
+  return new Intl.DateTimeFormat('fr-FR', {
     day: 'numeric',
+    month: 'long',
     year: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true
+    hour12: false
   }).format(date);
 }

@@ -1,4 +1,4 @@
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserClient } from '@supabase/ssr';
 
 // Use a fallback mechanism to avoid runtime errors
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -11,7 +11,10 @@ if (!SUPABASE_ANON_KEY) {
   throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
 }
 
-export const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+export const supabase = createBrowserClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
 // Shared types
 export type BetTypeKey = 'Poto' | 'Tout chaud' | '3 Nape' | '4 Nape' | 'Perm';
@@ -35,7 +38,7 @@ export interface Match {
 
 export interface FootballBet {
   id: string;
-  matches: Array<{ 
+  matches: Array<{
     match_id: string;
     bet_type: string;
     odds: number;
@@ -88,6 +91,7 @@ export interface UserProfile {
   city: string;
   neighborhood: string;
   country: string;
+  phone_number?: string;
   account_balance: number;
   created_at: string;
   updated_at: string;
@@ -106,6 +110,17 @@ export interface Transaction {
   updated_at: string;
 }
 
+export interface Notification {
+  id: string;
+  user_id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  is_read: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CreateUserProfileData {
   user_id: string;
   first_name: string;
@@ -113,6 +128,7 @@ export interface CreateUserProfileData {
   city: string;
   neighborhood: string;
   country: string;
+  phone_number?: string;
 }
 
 export interface CreateTransactionData {
@@ -172,7 +188,7 @@ export async function getTicketsByPhoneNumber(phoneNumber: string) {
 export async function createTicket(ticketData: CreateTicketData): Promise<Ticket> {
   // Normaliser le numéro de téléphone avant de l'insérer
   const normalizedPhone = ticketData.phone_number.toString().trim().replace(/\D/g, '');
-  
+
   const { data, error } = await supabase
     .from('tickets')
     .insert([{
@@ -379,13 +395,13 @@ export async function createTransaction(transactionData: CreateTransactionData):
 }
 
 export async function updateTransactionStatus(
-  transactionId: string, 
-  status: Transaction['status'], 
+  transactionId: string,
+  status: Transaction['status'],
   admin_notes?: string
 ) {
   const { data, error } = await supabase
     .from('transactions')
-    .update({ 
+    .update({
       status,
       admin_notes: admin_notes || null
     })
@@ -395,3 +411,89 @@ export async function updateTransactionStatus(
   if (error) throw error;
   return data[0];
 }
+
+// Notification functions
+export async function getUserNotifications(userId: string, limit: number = 10) {
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data;
+}
+
+export async function markNotificationAsRead(notificationId: string) {
+  const { data, error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('id', notificationId)
+    .select();
+
+  if (error) throw error;
+  return data[0];
+}
+
+export async function markAllNotificationsAsRead(userId: string) {
+  const { data, error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('user_id', userId)
+    .eq('is_read', false)
+    .select();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function createNotification(notification: {
+  user_id: string;
+  title: string;
+  message: string;
+  type: Notification['type'];
+}) {
+  const { data, error } = await supabase
+    .from('notifications')
+    .insert([notification])
+    .select();
+
+  if (error) throw error;
+  return data[0];
+}
+
+export const updateUserRole = async (userId: string, role: 'admin' | 'user') => {
+  try {
+    // First, get the current user metadata
+    const { data: userData, error: userError } = await supabase
+      .from('auth.users')
+      .select('raw_user_meta_data')
+      .eq('id', userId)
+      .single();
+
+    if (userError) throw userError;
+
+    // Update the user metadata with the new role
+    const { data, error } = await supabase.auth.admin.updateUserById(
+      userId,
+      {
+        user_metadata: {
+          ...userData?.raw_user_meta_data,
+          role
+        }
+      }
+    );
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error updating user role:', error);
+    return {
+      data: null,
+      error: error instanceof Error
+        ? error
+        : new Error('Failed to update user role')
+    };
+  }
+};

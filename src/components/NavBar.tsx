@@ -81,14 +81,26 @@ export default function NavBar() {
         </button> */}
         <div className="flex items-center space-x-4 ml-auto mr-4">
           {user ? (
-            <Button
-              variant="ghost"
-              onClick={handleLogout}
-              className="px-3 py-2 rounded-md text-sm font-medium hover:bg-green-50 text-gray-700"
-            >
-              <LogOutIcon className="h-4 w-4 mr-2" />
-              Déconnexion
-            </Button>
+            <>
+              <Link
+                href="/user-dashboard"
+                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-green-50 text-gray-700 flex items-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                Mon espace
+              </Link>
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-green-50 text-gray-700"
+              >
+                <LogOutIcon className="h-4 w-4 mr-2" />
+                Déconnexion
+              </Button>
+            </>
           ) : (
             <>
               <Link

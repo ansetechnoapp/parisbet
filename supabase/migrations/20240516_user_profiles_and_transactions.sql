@@ -82,6 +82,10 @@ CREATE POLICY "Users can update their own profile"
     ON public.user_profiles FOR UPDATE
     USING (auth.uid() = user_id);
 
+CREATE POLICY "Users can create their own profile"
+    ON public.user_profiles FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
 CREATE POLICY "Admins can view all profiles"
     ON public.user_profiles FOR SELECT
     USING (EXISTS (
@@ -93,6 +97,14 @@ CREATE POLICY "Admins can view all profiles"
 CREATE POLICY "Admins can update all profiles"
     ON public.user_profiles FOR UPDATE
     USING (EXISTS (
+        SELECT 1 FROM auth.users
+        WHERE auth.users.id = auth.uid()
+        AND auth.users.raw_user_meta_data->>'role' = 'admin'
+    ));
+
+CREATE POLICY "Admins can create profiles"
+    ON public.user_profiles FOR INSERT
+    WITH CHECK (EXISTS (
         SELECT 1 FROM auth.users
         WHERE auth.users.id = auth.uid()
         AND auth.users.raw_user_meta_data->>'role' = 'admin'

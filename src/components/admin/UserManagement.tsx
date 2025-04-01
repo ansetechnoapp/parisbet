@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, updateUserRole } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -19,10 +19,20 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "react-hot-toast";
 
 interface User {
     id: string;
     email: string;
+    user_metadata?: {
+        role?: string;
+    };
     user_profiles: {
         first_name: string;
         last_name: string;
@@ -42,6 +52,7 @@ export default function UserManagement() {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [showDialog, setShowDialog] = useState(false);
     const [balanceAdjustment, setBalanceAdjustment] = useState('');
+    const [isUpdatingRole, setIsUpdatingRole] = useState(false);
 
     useEffect(() => {
         fetchUsers();
@@ -56,13 +67,31 @@ export default function UserManagement() {
                     user:user_id (
                         id,
                         email,
+                        raw_user_meta_data,
                         created_at
                     )
                 `)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            setUsers(data || []);
+
+            // Transform the data to match the User interface
+            const transformedUsers = (data || []).map(profile => ({
+                id: profile.user.id,
+                email: profile.user.email,
+                user_metadata: profile.user.raw_user_meta_data,
+                user_profiles: {
+                    first_name: profile.first_name,
+                    last_name: profile.last_name,
+                    city: profile.city,
+                    neighborhood: profile.neighborhood,
+                    country: profile.country,
+                    account_balance: profile.account_balance
+                },
+                created_at: profile.user.created_at
+            }));
+
+            setUsers(transformedUsers);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Échec de récupération des utilisateurs');
         } finally {
@@ -94,7 +123,7 @@ export default function UserManagement() {
                     type: adjustment > 0 ? 'top_up' : 'withdrawal',
                     amount: Math.abs(adjustment),
                     status: 'approved',
-                    admin_notes: 'Ajustement de solde par l\'administrateur',
+                    admin_notes: "Ajustement de solde par l&apos;administrateur",
                 });
 
             if (transactionError) throw transactionError;
@@ -103,7 +132,26 @@ export default function UserManagement() {
             setBalanceAdjustment('');
             fetchUsers();
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Échec de l\'ajustement du solde');
+            setError(err instanceof Error ? err.message : "Échec de l&apos;ajustement du solde");
+        }
+    };
+
+    const handleRoleUpdate = async (userId: string, newRole: 'admin' | 'user') => {
+        try {
+            setIsUpdatingRole(true);
+            const { error } = await updateUserRole(userId, newRole);
+
+            if (error) throw error;
+
+            // Refresh the users list
+            await fetchUsers();
+
+            toast.success("Rôle mis à jour avec succès: Le rôle de l&apos;utilisateur a été mis à jour");
+        } catch (error) {
+            console.error('Error updating role:', error);
+            toast.error(`Erreur lors de la mise à jour du rôle: ${error instanceof Error ? error.message : "Une erreur s&apos;est produite"}`);
+        } finally {
+            setIsUpdatingRole(false);
         }
     };
 
@@ -137,6 +185,7 @@ export default function UserManagement() {
                         <TableRow>
                             <TableHead>Nom</TableHead>
                             <TableHead>E-mail</TableHead>
+                            <TableHead>Rôle</TableHead>
                             <TableHead>Localisation</TableHead>
                             <TableHead>Solde</TableHead>
                             <TableHead>Inscription</TableHead>
@@ -151,6 +200,14 @@ export default function UserManagement() {
                                 </TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>
+                                    <span className={`px-2 py-1 rounded-full text-xs ${user.user_metadata?.role === 'admin'
+                                        ? 'bg-purple-100 text-purple-800'
+                                        : 'bg-gray-100 text-gray-800'
+                                        }`}>
+                                        {user.user_metadata?.role || 'user'}
+                                    </span>
+                                </TableCell>
+                                <TableCell>
                                     {user.user_profiles.city}, {user.user_profiles.neighborhood}
                                     <br />
                                     <span className="text-sm text-gray-500">{user.user_profiles.country}</span>
@@ -160,16 +217,36 @@ export default function UserManagement() {
                                     {new Date(user.created_at).toLocaleDateString()}
                                 </TableCell>
                                 <TableCell>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => {
-                                            setSelectedUser(user);
-                                            setShowDialog(true);
-                                        }}
-                                    >
-                                        Ajuster le solde
-                                    </Button>
+                                    <div className="flex space-x-2">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="outline" size="sm">
+                                                    Actions
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                <DropdownMenuItem
+                                                    onClick={() => {
+                                                        setSelectedUser(user);
+                                                        setShowDialog(true);
+                                                    }}
+                                                >
+                                                    Ajuster le solde
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={() => handleRoleUpdate(
+                                                        user.id,
+                                                        user.user_metadata?.role === 'admin' ? 'user' : 'admin'
+                                                    )}
+                                                    disabled={isUpdatingRole}
+                                                >
+                                                    {user.user_metadata?.role === 'admin'
+                                                        ? 'Rétrograder en utilisateur'
+                                                        : 'Promouvoir en admin'}
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}

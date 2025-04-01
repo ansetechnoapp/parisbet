@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -160,6 +161,9 @@ export default function Wallet() {
                     {balance.toFixed(2)} FCFA
                 </div>
                 <div className="flex space-x-4">
+                    <Link href="/user-dashboard">
+                        <Button variant="outline">Accéder à mon espace</Button>
+                    </Link>
                     <Dialog open={showTopUpDialog} onOpenChange={setShowTopUpDialog}>
                         <DialogTrigger asChild>
                             <Button>Recharger</Button>

@@ -70,7 +70,7 @@ export default function TransactionManagement() {
             if (error) throw error;
             setTransactions(data || []);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Échec de récupération des transactions');
+            setError(err instanceof Error ? err.message : "Échec de récupération des transactions");
         } finally {
             setLoading(false);
         }
@@ -92,7 +92,7 @@ export default function TransactionManagement() {
             setAdminNotes('');
             fetchTransactions();
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Échec de mise à jour du statut de la transaction');
+            setError(err instanceof Error ? err.message : "Échec de mise à jour du statut de la transaction");
         }
     };
 

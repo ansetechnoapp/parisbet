@@ -49,9 +49,12 @@ export default function FrontLayout({ children }: { children: React.ReactNode })
         { name: 'Distribution des gains', href: '/prize-distribution', icon: TicketIcon },
     ];
 
-    // Only show wallet for authenticated users
+    // Only show these options for authenticated users
     if (user) {
-        navigation.push({ name: 'Portefeuille', href: '/wallet', icon: WalletIcon });
+        navigation.push(
+            { name: 'Portefeuille', href: '/wallet', icon: WalletIcon },
+            { name: 'Mon espace', href: '/user-dashboard', icon: WalletIcon }
+        );
     }
 
     if (loading) {

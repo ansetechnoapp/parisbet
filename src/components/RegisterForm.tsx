@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase, createUserProfile } from '@/lib/supabase';
@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 
 export default function RegisterForm() {
     const router = useRouter();
-    const { loadUser } = useUserStore();
+    const { loadUser, user } = useUserStore();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
@@ -23,6 +23,14 @@ export default function RegisterForm() {
         neighborhood: '',
         country: ''
     });
+
+    // Vérifier si l'utilisateur est déjà connecté
+    useEffect(() => {
+        // Si l'utilisateur est déjà connecté, le rediriger vers la page d'accueil
+        if (user) {
+            router.push('/');
+        }
+    }, [user, router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({

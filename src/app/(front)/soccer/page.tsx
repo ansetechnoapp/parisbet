@@ -112,7 +112,7 @@ export default function SoccerPage() {
             });
         } catch (error) {
             toast.error("Impossible de placer le pari", {
-                description: error instanceof Error ? error.message : "Une erreur s'est produite"
+                description: error instanceof Error ? error.message : "Une erreur s&apos;est produite"
             });
         }
     };
@@ -208,7 +208,7 @@ export default function SoccerPage() {
                                                     <p className="text-sm text-gray-500">
                                                         {bet.bet_type === "team1Win" ? `${match.home_team} Gagne` :
                                                             bet.bet_type === "team2Win" ? `${match.away_team} Gagne` :
-                                                                bet.bet_type === "draw" ? "Match Nul" : "L'une des équipes gagne"}
+                                                                bet.bet_type === "draw" ? "Match Nul" : "L&apos;une des équipes gagne"}
                                                     </p>
                                                 </div>
                                                 <div className="flex items-center space-x-2">

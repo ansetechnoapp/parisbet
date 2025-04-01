@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
+import { isAdmin } from '@/lib/auth';
+import { useUserStore } from '@/lib/store';
+import { toast } from 'react-hot-toast';
 
 export default function DashboardLayout({
   children,
@@ -15,6 +18,7 @@ export default function DashboardLayout({
   const [collapsed, setCollapsed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isUserAdmin, setIsUserAdmin] = useState(false);
 
   const checkAuth = useCallback(async () => {
     try {
@@ -23,12 +27,31 @@ export default function DashboardLayout({
         router.push('/auth/login');
         return;
       }
+
+      // Check if user is admin
+      const userIsAdmin = isAdmin(session.user);
+      setIsUserAdmin(userIsAdmin);
+
+      // If trying to access admin routes without being admin, redirect to home
+      const isAdminRoute = pathname.startsWith('/Overview') || 
+                          pathname.startsWith('/matchesAdmin') || 
+                          pathname.startsWith('/ticketsAdmin') || 
+                          pathname.startsWith('/ticketsListAdmin') || 
+                          pathname.startsWith('/lottoAdmin') || 
+                          pathname.startsWith('/users') || 
+                          pathname.startsWith('/transactions');
+
+      if (isAdminRoute && !userIsAdmin) {
+        router.push('/');
+        return;
+      }
+
       setLoading(false);
     } catch (error) {
       console.error('Error checking auth:', error);
       router.push('/auth/login');
     }
-  }, [router]);
+  }, [router, pathname]);
 
   useEffect(() => {
     checkAuth();
@@ -36,10 +59,13 @@ export default function DashboardLayout({
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await useUserStore.getState().logout();
       router.push('/auth/login');
     } catch (error) {
       console.error('Error logging out:', error);
+      toast.error("Erreur lors de la déconnexion", {
+        description: "Veuillez réessayer"
+      });
     }
   };
 
@@ -51,7 +77,8 @@ export default function DashboardLayout({
     );
   }
 
-  const navItems = [
+  // Only show admin navigation items if user is admin
+  const navItems = isUserAdmin ? [
     { path: '/Overview', label: 'Aperçu', icon: 'chart-pie' },
     { path: '/matchesAdmin', label: 'Matchs', icon: 'football' },
     { path: '/ticketsAdmin', label: 'Tickets', icon: 'ticket' },
@@ -59,7 +86,7 @@ export default function DashboardLayout({
     { path: '/lottoAdmin', label: 'Loto', icon: 'lottery' },
     { path: '/users', label: 'Utilisateurs', icon: 'users' },
     { path: '/transactions', label: 'Transactions', icon: 'wallet' },
-  ];
+  ] : [];
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100">
