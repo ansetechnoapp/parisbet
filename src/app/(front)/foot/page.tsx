@@ -45,7 +45,7 @@ export default function FootballBetting() {
       const data = await getMatches();
       setMatches(data);
     } catch (err) {
-      setError('Failed to load matches. Please try again later.');
+      setError('Impossible de charger les matchs. Veuillez réessayer plus tard.');
       console.error('Error fetching matches:', err);
     } finally {
       setLoading(false);
@@ -119,7 +119,7 @@ export default function FootballBetting() {
       alert('Pari placé avec succès! Vous recevrez une confirmation par SMS.');
     } catch (err) {
       console.error('Error placing bet:', err);
-      setError('Failed to place bet. Please try again.');
+      setError('Impossible de placer le pari. Veuillez réessayer.');
     }
   };
 

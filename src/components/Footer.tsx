@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="text-center text-sm">
-          2025 © LNB - Tous droits réservés. Appartenance des sites de jeu à la LNB.
+          2025 © LNB - Tous droits réservés.
         </div>
       </div>
     </footer>

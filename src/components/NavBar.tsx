@@ -1,15 +1,20 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { supabase } from '@/lib/supabase';
+import { Button } from '@/components/ui/button';
+import { LogOutIcon } from 'lucide-react';
 
 export default function NavBar() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isTicketDropdownOpen, setIsTicketDropdownOpen] = useState(false);
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const [user, setUser] = useState<{ id: string } | null>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -25,48 +30,44 @@ export default function NavBar() {
     };
   }, []);
 
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        setUser(data.session?.user || null);
+      } catch (error) {
+        console.error('Error checking auth:', error);
+      }
+    };
+
+    checkAuth();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (_, session) => {
+        setUser(session?.user || null);
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
     <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-green-100">
       <div className="container mx-auto flex justify-between items-center py-3 md:py-4 px-4 md:px-6">
-        <div className="flex items-center">
-          <Link href="/" className="text-green-600 text-2xl md:text-3xl font-bold tracking-tight">paribet</Link>
-          {/* Navigation desktop */}
-          <nav className="hidden md:flex ml-10 space-x-8">
-            <Link
-              href="/"
-              className={`${pathname === '/' ? 'text-green-600 border-b-2 border-green-500' : 'text-gray-600'} font-medium pb-1 hover:text-green-600 transition-colors`}
-            >
-              Jouer au loto
-            </Link>
-            <Link
-              href="/foot"
-              className={`${pathname === '/foot' ? 'text-green-600 border-b-2 border-green-500' : 'text-gray-600'} font-medium pb-1 hover:text-green-600 transition-colors`}
-            >
-              Paris football
-            </Link>
-            <Link
-              href="/results"
-              className={`${pathname === '/results' ? 'text-green-600 border-b-2 border-green-500' : 'text-gray-600'} font-medium pb-1 hover:text-green-600 transition-colors`}
-            >
-              Résultats
-            </Link>
-            <Link
-              href="/how-to-play"
-              className={`${pathname === '/how-to-play' ? 'text-green-600 border-b-2 border-green-500' : 'text-gray-600'} font-medium pb-1 hover:text-green-600 transition-colors`}
-            >
-              Comment jouer
-            </Link>
-            <Link
-              href="/prize-distribution"
-              className={`${pathname === '/prize-distribution' ? 'text-green-600 border-b-2 border-green-500' : 'text-gray-600'} font-medium pb-1 hover:text-green-600 transition-colors`}
-            >
-              Distribution des gains
-            </Link>
-          </nav>
-        </div>
-
         {/* Bouton menu mobile */}
-        <button
+        {/* <button
           className="md:hidden p-2"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
@@ -77,8 +78,34 @@ export default function NavBar() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             )}
           </svg>
-        </button>
-
+        </button> */}
+        <div className="flex items-center space-x-4 ml-auto mr-4">
+          {user ? (
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+              className="px-3 py-2 rounded-md text-sm font-medium hover:bg-green-50 text-gray-700"
+            >
+              <LogOutIcon className="h-4 w-4 mr-2" />
+              Déconnexion
+            </Button>
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-green-50 text-gray-700"
+              >
+                Connexion
+              </Link>
+              <Link
+                href="/auth/register"
+                className="px-3 py-2 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-700"
+              >
+                S&apos;inscrire
+              </Link>
+            </>
+          )}
+        </div>
         {/* Ticket access dropdown */}
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
@@ -134,7 +161,7 @@ export default function NavBar() {
       </div>
 
       {/* Menu mobile */}
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
@@ -144,52 +171,25 @@ export default function NavBar() {
             className="md:hidden bg-white border-t border-green-100"
           >
             <nav className="flex flex-col py-2">
-            <Link
-              href="/"
-              className={`px-4 py-2 ${pathname === '/' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
-            >
-              Jouer au loto
-            </Link>
-            <Link
-              href="/foot"
-              className={`px-4 py-2 ${pathname === '/foot' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
-            >
-              Paris football
-            </Link>
-            <Link
-              href="/results"
-              className={`px-4 py-2 ${pathname === '/results' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
-            >
-              Résultats
-            </Link>
-            <Link
-              href="/how-to-play"
-              className={`px-4 py-2 ${pathname === '/how-to-play' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
-            >
-              Comment jouer
-            </Link>
-            <Link
-              href="/prize-distribution"
-              className={`px-4 py-2 ${pathname === '/prize-distribution' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
-            >
-              Distribution des gains
-            </Link>
-            <Link
-              href="/verify-phone"
-              className={`px-4 py-2 ${pathname === '/verify-phone' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
-            >
-              Mes tickets (par numéro)
-            </Link>
-            <Link
-              href="/find-ticket"
-              className={`px-4 py-2 ${pathname === '/find-ticket' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
-            >
-              Rechercher un ticket par ID
-            </Link>
-          </nav>
+
+
+
+              <Link
+                href="/verify-phone"
+                className={`px-4 py-2 ${pathname === '/verify-phone' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
+              >
+                Mes tickets (par numéro)
+              </Link>
+              <Link
+                href="/find-ticket"
+                className={`px-4 py-2 ${pathname === '/find-ticket' ? 'text-green-600 font-medium' : 'text-gray-600'}`}
+              >
+                Rechercher un ticket par ID
+              </Link>
+            </nav>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </header>
   );
 }

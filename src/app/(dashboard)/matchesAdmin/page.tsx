@@ -105,7 +105,7 @@
 //       });
 //     } catch (error) {
 //       console.error('Error adding match:', error);
-//       setFormErrors({ submit: 'Failed to add match. Please try again.' });
+//       setFormErrors({ submit: 'Échec de l\'ajout du match. Veuillez réessayer.' });
 //     }
 //   };
 
@@ -119,18 +119,18 @@
 //   };
 
 //   if (loading) {
-//     return <div className="flex justify-center items-center h-64">Loading...</div>;
+//     return <div className="flex justify-center items-center h-64">Chargement...</div>;
 //   }
 
 //   return (
 //     <div className="max-w-full">
 //       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4 sm:gap-0">
-//         <h1 className="text-xl sm:text-2xl font-bold">Matches Management</h1>
+//         <h1 className="text-xl sm:text-2xl font-bold">Gestion des Matchs</h1>
 //         <button
 //           onClick={() => setShowAddForm(true)}
 //           className="bg-blue-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-700 text-sm sm:text-base w-full sm:w-auto"
 //         >
-//           Add New Match
+//           Ajouter un Match
 //         </button>
 //       </div>
 
@@ -138,7 +138,7 @@
 //       {showAddForm && (
 //         <div className="bg-white p-4 sm:p-6 rounded-lg shadow mb-6 overflow-hidden">
 //           <div className="flex justify-between items-center mb-4">
-//             <h2 className="text-lg sm:text-xl font-semibold">Add New Match</h2>
+//             <h2 className="text-lg sm:text-xl font-semibold">Ajouter un Nouveau Match</h2>
 //             <button
 //               onClick={() => setShowAddForm(false)}
 //               className="text-gray-500 hover:text-gray-700"
@@ -156,7 +156,7 @@
 //           <form onSubmit={handleSubmit} className="space-y-4">
 //             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 //               <div>
-//                 <label className="block text-sm font-medium text-gray-700">Home Team</label>
+//                 <label className="block text-sm font-medium text-gray-700">Équipe à domicile</label>
 //                 <input
 //                   type="text"
 //                   value={newMatch.home_team}
@@ -172,7 +172,7 @@
 //                 )}
 //               </div>
 //               <div>
-//                 <label className="block text-sm font-medium text-gray-700">Away Team</label>
+//                 <label className="block text-sm font-medium text-gray-700">Équipe à l'extérieur</label>
 //                 <input
 //                   type="text"
 //                   value={newMatch.away_team}
@@ -204,7 +204,7 @@
 //                 )}
 //               </div>
 //               <div>
-//                 <label className="block text-sm font-medium text-gray-700">League</label>
+//                 <label className="block text-sm font-medium text-gray-700">Championnat</label>
 //                 <select
 //                   value={newMatch.league}
 //                   onChange={(e) => {
@@ -214,7 +214,7 @@
 //                   className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${formErrors.league ? 'border-red-500' : ''}`}
 //                   required
 //                 >
-//                   <option value="">Select a league</option>
+//                   <option value="">Sélectionner un championnat</option>
 //                   {LEAGUES.map((league) => (
 //                     <option key={league.id} value={league.id}>{league.name}</option>
 //                   ))}
@@ -418,19 +418,19 @@ export default function MatchesPage() {
     const matchDate = newMatch.date ? new Date(newMatch.date) : null;
 
     if (!matchDate || matchDate < now) {
-      errors.date = "Match date cannot be in the past";
+      errors.date = "La date du match ne peut pas être dans le passé";
     }
 
     if (!newMatch.home_team?.trim()) {
-      errors.home_team = "Home team is required";
+      errors.home_team = "L'équipe à domicile est requise";
     }
 
     if (!newMatch.away_team?.trim()) {
-      errors.away_team = "Away team is required";
+      errors.away_team = "L'équipe à l'extérieur est requise";
     }
 
     if (!newMatch.league?.trim()) {
-      errors.league = "League is required";
+      errors.league = "Le championnat est requis";
     }
 
     setFormErrors(errors);
@@ -729,8 +729,8 @@ export default function MatchesPage() {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Match</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">League</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Championnat</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
@@ -757,12 +757,12 @@ export default function MatchesPage() {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                  <button className="text-blue-600 hover:text-blue-900 mr-3">Modifier</button>
                   <button
                     onClick={() => handleDelete(match.id)}
                     className="text-red-600 hover:text-red-900"
                   >
-                    Delete
+                    Supprimer
                   </button>
                 </td>
               </tr>

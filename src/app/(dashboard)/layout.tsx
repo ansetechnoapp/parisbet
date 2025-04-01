@@ -52,11 +52,13 @@ export default function DashboardLayout({
   }
 
   const navItems = [
-    { path: '/Overview', label: 'Overview', icon: 'chart-pie' },
-    { path: '/matchesAdmin', label: 'Matches', icon: 'football' },
+    { path: '/Overview', label: 'Aperçu', icon: 'chart-pie' },
+    { path: '/matchesAdmin', label: 'Matchs', icon: 'football' },
     { path: '/ticketsAdmin', label: 'Tickets', icon: 'ticket' },
-    { path: '/ticketsListAdmin', label: 'Ticket List', icon: 'list' },
-    { path: '/lottoAdmin', label: 'Lotto', icon: 'lottery' },
+    { path: '/ticketsListAdmin', label: 'Liste des tickets', icon: 'list' },
+    { path: '/lottoAdmin', label: 'Loto', icon: 'lottery' },
+    { path: '/users', label: 'Utilisateurs', icon: 'users' },
+    { path: '/transactions', label: 'Transactions', icon: 'wallet' },
   ];
 
   return (
@@ -68,7 +70,7 @@ export default function DashboardLayout({
       >
         <div className="p-4 flex justify-between items-center">
           <h1 className={`text-xl font-bold text-green-600 ${collapsed ? 'hidden' : 'block'}`}>
-            Parisbet Admin
+            Afribet Admin
           </h1>
           <button
             onClick={() => setCollapsed(!collapsed)}
@@ -120,8 +122,8 @@ export default function DashboardLayout({
       {/* Mobile header and menu */}
       <div className="md:hidden bg-white w-full shadow-md">
         <div className="flex justify-between items-center p-4">
-          <h1 className="text-xl font-bold text-green-600">Parisbet</h1>
-          <button 
+          <h1 className="text-xl font-bold text-green-600">Afribet</h1>
+          <button
             className="text-gray-600"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
@@ -130,14 +132,14 @@ export default function DashboardLayout({
             </svg>
           </button>
         </div>
-        
+
         {/* Mobile Menu Drawer */}
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-50 bg-gray-800 bg-opacity-75 flex">
             <div className="bg-white w-64 h-full overflow-y-auto">
               <div className="p-4 flex justify-between items-center border-b">
-                <h1 className="text-xl font-bold text-green-600">Parisbet Admin</h1>
-                <button 
+                <h1 className="text-xl font-bold text-green-600">Afribet Admin</h1>
+                <button
                   className="text-gray-600"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -151,11 +153,10 @@ export default function DashboardLayout({
                   <Link
                     key={item.path}
                     href={item.path}
-                    className={`flex items-center py-3 px-4 ${
-                      pathname === item.path
-                        ? 'bg-green-50 text-green-600 border-l-4 border-green-600'
-                        : 'text-gray-700 hover:bg-gray-50'
-                    }`}
+                    className={`flex items-center py-3 px-4 ${pathname === item.path
+                      ? 'bg-green-50 text-green-600 border-l-4 border-green-600'
+                      : 'text-gray-700 hover:bg-gray-50'
+                      }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <span className="mr-3">
@@ -164,7 +165,7 @@ export default function DashboardLayout({
                     <span>{item.label}</span>
                   </Link>
                 ))}
-                
+
                 {/* Mobile Logout button */}
                 <button
                   onClick={handleLogout}
@@ -223,6 +224,19 @@ function SidebarIcon({ name }: { name: string }) {
       return (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+        </svg>
+      );
+    case 'users':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+        </svg>
+      );
+    case 'wallet':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+          <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
         </svg>
       );
     default:

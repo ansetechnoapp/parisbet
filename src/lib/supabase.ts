@@ -80,6 +80,49 @@ export interface CreateTicketData {
   phone_number: string;
 }
 
+export interface UserProfile {
+  id: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  city: string;
+  neighborhood: string;
+  country: string;
+  account_balance: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Transaction {
+  id: string;
+  user_id: string;
+  type: 'top_up' | 'withdrawal';
+  amount: number;
+  status: 'pending' | 'approved' | 'rejected';
+  payment_method?: string;
+  payment_proof_url?: string;
+  admin_notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateUserProfileData {
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  city: string;
+  neighborhood: string;
+  country: string;
+}
+
+export interface CreateTransactionData {
+  user_id: string;
+  type: 'top_up' | 'withdrawal';
+  amount: number;
+  payment_method?: string;
+  payment_proof_url?: string;
+}
+
 // Database functions
 export async function getMatches() {
   const { data, error } = await supabase
@@ -256,4 +299,99 @@ export async function getBets(phoneNumber?: string) {
 export async function signOut() {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
+}
+
+// User profile functions
+export async function getUserProfile(userId: string) {
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('*')
+    .eq('user_id', userId)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function createUserProfile(profileData: CreateUserProfileData): Promise<UserProfile> {
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .insert([profileData])
+    .select();
+
+  if (error) throw error;
+  return data[0];
+}
+
+export async function updateUserProfile(userId: string, profileData: Partial<UserProfile>) {
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .update(profileData)
+    .eq('user_id', userId)
+    .select();
+
+  if (error) throw error;
+  return data[0];
+}
+
+// Transaction functions
+export async function getUserTransactions(userId: string) {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getAllTransactions() {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select(`
+      *,
+      user:user_id (
+        email,
+        user_profiles (
+          first_name,
+          last_name
+        )
+      )
+    `)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function createTransaction(transactionData: CreateTransactionData): Promise<Transaction> {
+  const { data, error } = await supabase
+    .from('transactions')
+    .insert([{
+      ...transactionData,
+      status: 'pending'
+    }])
+    .select();
+
+  if (error) throw error;
+  return data[0];
+}
+
+export async function updateTransactionStatus(
+  transactionId: string, 
+  status: Transaction['status'], 
+  admin_notes?: string
+) {
+  const { data, error } = await supabase
+    .from('transactions')
+    .update({ 
+      status,
+      admin_notes: admin_notes || null
+    })
+    .eq('id', transactionId)
+    .select();
+
+  if (error) throw error;
+  return data[0];
 }

@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
+import StoreInitializer from '@/components/StoreInitializer';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Parisbet - Sports Betting Platform",
-  description: "Parisbet - Your premier sports betting platform",
+  title: "Afribet - Sports Betting Platform",
+  description: "Afribet - Your premier sports betting platform",
   icons: {
     icon: "/favicon.ico",
   },
@@ -38,7 +40,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
       >
+        <StoreInitializer />
         {children}
+        <Toaster />
       </body>
     </html>
   );
