@@ -94,7 +94,7 @@ export const useAuth = () => {
     roles: state.roles,
     loading: state.loading,
     error: state.error,
-    isAdmin: state.user ? isAdmin(state.user) : false,
+    isAdmin: state.user ? await isAdmin(state.user) : false,
     hasPermission,
     supabase
   };

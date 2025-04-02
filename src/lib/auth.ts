@@ -12,14 +12,25 @@ export interface UserRole {
   roles: Role;
 }
 
-export const isAdmin = (user: User | null): boolean => {
+export const isAdmin = async (user: User | null): Promise<boolean> => {
   if (!user) return false;
-  return user.user_metadata?.role === 'admin';
+  
+  // Vérifier d'abord les métadonnées de l'utilisateur
+  if (user.user_metadata?.role === 'admin') return true;
+  
+  // Ensuite vérifier la table user_roles
+  const { data: userRoles } = await supabase
+    .from('user_roles')
+    .select('roles (name)')
+    .eq('user_id', user.id)
+    .single();
+
+  return userRoles?.roles?.name === 'admin';
 };
 
-export const getRedirectPath = (user: User | null): string => {
+export const getRedirectPath = async (user: User | null): Promise<string> => {
   if (!user) return '/';
-  return isAdmin(user) ? '/Overview' : '/user-dashboard';
+  return (await isAdmin(user)) ? '/Overview' : '/user-dashboard';
 };
 
 export const getUserRoles = async (userId: string): Promise<Role[]> => {

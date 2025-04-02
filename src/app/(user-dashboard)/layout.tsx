@@ -38,7 +38,7 @@ export default function UserDashboardLayout({
       }
       console.log('Session:', session);
       // Si l'utilisateur est admin, le rediriger vers l'espace admin
-      const userIsAdmin = isAdmin(session.user);
+      const userIsAdmin = await isAdmin(session.user);
       if (userIsAdmin) {
         router.push('/Overview');
         return;

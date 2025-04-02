@@ -1,44 +1,28 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useEffect, useState } from 'react';
+import { createBrowserClient } from '@supabase/ssr';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
 import { useUserStore } from '@/lib/store';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { getRedirectPath } from '@/lib/auth';
 
-function LoginForm() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const redirectPath = searchParams.get('redirect') || '/';
-    const { loadUser, user } = useUserStore();
-
-    const [loading, setLoading] = useState(false);
+export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectedFrom = searchParams.get('redirectedFrom');
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const { loadUser, user } = useUserStore();
 
-    // Check authentication state
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session?.user) {
-                    const finalRedirectPath = getRedirectPath(session.user);
-                    router.push(finalRedirectPath);
-                }
-            } catch (error) {
-                console.error('Error checking auth:', error);
-            }
-        };
-        
-        if (!user) {
-            checkAuth();
-        }
-    }, [user, router]);
+    // We don't need this useEffect anymore as the middleware will handle redirects
+    // for authenticated users trying to access the login page
 
     useEffect(() => {
         // Check for message parameter to show toast
@@ -53,76 +37,142 @@ function LoginForm() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setError(null);
 
         try {
             const { data, error } = await supabase.auth.signInWithPassword({
                 email,
-                password
+                password,
             });
 
-            if (error) throw error;
+            if (error) {
+                throw error;
+            }
 
-            // Successfully logged in, load user data
-            await loadUser();
+            if (data.session) {
+                // Récupérer le rôle de l'utilisateur
+                const { data: userRoles, error: rolesError } = await supabase
+                    .from('user_roles')
+                    .select(`
+                        role_id,
+                        roles (
+                            id,
+                            name,
+                            permissions
+                        )
+                    `)
+                    .eq('user_id', data.session.user.id)
+                    .single();
 
-            // Get the appropriate redirect path based on user role
-            const finalRedirectPath = data.user ? getRedirectPath(data.user) : redirectPath;
+                console.log('Session User ID:', data.session.user.id);
+                console.log('User Roles Query Error:', rolesError);
+                console.log('User Roles Data:', userRoles);
 
-            // Redirect to the appropriate page
-            toast.success("Connexion réussie", {
-                description: "Vous êtes maintenant connecté"
-            });
+                if (rolesError) {
+                    console.error('Error fetching user roles:', rolesError);
+                    toast.error('Erreur lors de la récupération des rôles');
+                    return;
+                }
 
-            router.push(finalRedirectPath);
-        } catch (error) {
-            console.error('Error signing in:', error);
-            toast.error("Échec de connexion", {
-                description: error instanceof Error ? error.message : "Identifiants de connexion invalides"
-            });
+                const userRole = userRoles?.roles?.name;
+                console.log('User Role:', userRole);
+
+                // Rediriger en fonction du rôle
+                if (redirectedFrom) {
+                    console.log('Redirecting to:', redirectedFrom);
+                    router.push(redirectedFrom);
+                } else {
+                    console.log('No redirectedFrom, using role-based redirect');
+                    if (!userRole) {
+                        console.error('No role found for user');
+                        toast.error('Erreur : Aucun rôle trouvé');
+                        return;
+                    }
+
+                    switch (userRole) {
+                        case 'admin':
+                            console.log('Admin detected, redirecting to /Overview');
+                            router.push('/Overview');
+                            break;
+                        case 'moderator':
+                            router.push('/moderator');
+                            break;
+                        case 'premium_user':
+                            router.push('/premium');
+                            break;
+                        default:
+                            console.log('Default role, redirecting to /user-dashboard');
+                            router.push('/user-dashboard');
+                    }
+                }
+
+                await loadUser();
+                toast.success('Connexion réussie');
+            }
+        } catch (error: any) {
+            setError(error.message || 'Une erreur est survenue lors de la connexion');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="container mx-auto max-w-md py-12">
-            <div className="bg-white p-8 rounded-lg shadow-md">
-                <h1 className="text-2xl font-bold mb-6 text-center">Connexion à votre compte</h1>
-
-                <form onSubmit={handleLogin}>
-                    <div className="space-y-4">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8">
+                <div>
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                        Connexion à votre compte
+                    </h2>
+                </div>
+                <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+                    {error && (
+                        <div className="rounded-md bg-red-50 p-4">
+                            <div className="text-sm text-red-700">{error}</div>
+                        </div>
+                    )}
+                    <div className="rounded-md shadow-sm -space-y-px">
                         <div>
-                            <Label htmlFor="email">E-mail</Label>
-                            <Input
+                            <label htmlFor="email" className="sr-only">
+                                Email
+                            </label>
+                            <input
                                 id="email"
+                                name="email"
                                 type="email"
+                                required
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                placeholder="Adresse email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                required
                             />
                         </div>
-
                         <div>
-                            <Label htmlFor="password">Mot de passe</Label>
-                            <Input
+                            <label htmlFor="password" className="sr-only">
+                                Mot de passe
+                            </label>
+                            <input
                                 id="password"
+                                name="password"
                                 type="password"
+                                required
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                placeholder="Mot de passe"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                required
                             />
                         </div>
+                    </div>
 
-                        <Button
+                    <div>
+                        <button
                             type="submit"
-                            className="w-full bg-primary"
                             disabled={loading}
+                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
-                            {loading ? "Connexion en cours..." : "Se connecter"}
-                        </Button>
+                            {loading ? 'Connexion en cours...' : 'Se connecter'}
+                        </button>
                     </div>
                 </form>
-
                 <div className="mt-4 text-center">
                     <p>
                         Vous n&apos;avez pas de compte ?{' '}
@@ -133,13 +183,5 @@ function LoginForm() {
                 </div>
             </div>
         </div>
-    );
-}
-
-export default function LoginPage() {
-    return (
-        <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Chargement...</div>}>
-            <LoginForm />
-        </Suspense>
     );
 }

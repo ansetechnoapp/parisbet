@@ -19,7 +19,7 @@ interface UserState {
   error: string | null;
   initialized: boolean;
   loadUser: () => Promise<void>;
-  loadProfile: () => Promise<void>;
+  loadProfile: () => Promise<void>; 
   loadTransactions: () => Promise<void>;
   setPendingBet: (bet: {
     matches: Array<{
@@ -63,7 +63,7 @@ export const useUserStore = create<UserState>()(
           if (data.session?.user) {
             get().loadProfile();
             get().loadTransactions();
-          }
+          } 
         } catch (error) {
           set({
             isLoading: false,
