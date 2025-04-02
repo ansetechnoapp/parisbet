@@ -36,12 +36,12 @@ export const getUserRoles = async (userId: string): Promise<Role[]> => {
     .eq('user_id', userId);
 
   if (error) throw error;
-  return data?.map(item => item.roles) || [];
+  return data?.map(item => item.roles as unknown as Role) || [];
 };
 
 export const hasPermission = async (userId: string, permission: string): Promise<boolean> => {
   const roles = await getUserRoles(userId);
-  return roles.some(role => 
+  return roles.some(role =>
     role.permissions.includes('all') || role.permissions.includes(permission)
   );
 };

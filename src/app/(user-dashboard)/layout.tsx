@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import UserNotifications from '@/components/UserNotifications';
 import { useUserStore } from '@/lib/store';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 export default function UserDashboardLayout({
   children,
@@ -36,7 +36,7 @@ export default function UserDashboardLayout({
         router.push('/auth/login');
         return;
       }
-console.log('Session:', session);
+      console.log('Session:', session);
       // Si l'utilisateur est admin, le rediriger vers l'espace admin
       const userIsAdmin = isAdmin(session.user);
       if (userIsAdmin) {
@@ -119,11 +119,10 @@ console.log('Session:', session);
             <Link
               key={item.path}
               href={item.path}
-              className={`flex items-center py-3 px-4 ${
-                pathname === item.path
+              className={`flex items-center py-3 px-4 ${pathname === item.path
                   ? 'bg-green-50 text-green-600 border-r-4 border-green-600'
                   : 'text-gray-700 hover:bg-gray-50'
-              }`}
+                }`}
             >
               <span className="mr-3">{item.icon}</span>
               {!collapsed && <span>{item.label}</span>}

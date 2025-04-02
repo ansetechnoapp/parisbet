@@ -27,7 +27,7 @@ export const useAuth = () => {
     const fetchUserAndRoles = async () => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
+
         if (sessionError) throw sessionError;
 
         if (session?.user) {
@@ -81,10 +81,10 @@ export const useAuth = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase.auth]);
 
   const hasPermission = (permission: string): boolean => {
-    return state.roles.some(role => 
+    return state.roles.some(role =>
       role.permissions.includes('all') || role.permissions.includes(permission)
     );
   };
@@ -98,4 +98,4 @@ export const useAuth = () => {
     hasPermission,
     supabase
   };
-}; 
+};

@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { isAdmin } from '@/lib/auth';
 import { useUserStore } from '@/lib/store';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 export default function DashboardLayout({
   children,
@@ -33,13 +33,13 @@ export default function DashboardLayout({
       setIsUserAdmin(userIsAdmin);
 
       // If trying to access admin routes without being admin, redirect to home
-      const isAdminRoute = pathname.startsWith('/Overview') || 
-                          pathname.startsWith('/matchesAdmin') || 
-                          pathname.startsWith('/ticketsAdmin') || 
-                          pathname.startsWith('/ticketsListAdmin') || 
-                          pathname.startsWith('/lottoAdmin') || 
-                          pathname.startsWith('/users') || 
-                          pathname.startsWith('/transactions');
+      const isAdminRoute = pathname.startsWith('/Overview') ||
+        pathname.startsWith('/matchesAdmin') ||
+        pathname.startsWith('/ticketsAdmin') ||
+        pathname.startsWith('/ticketsListAdmin') ||
+        pathname.startsWith('/lottoAdmin') ||
+        pathname.startsWith('/users') ||
+        pathname.startsWith('/transactions');
 
       if (isAdminRoute && !userIsAdmin) {
         router.push('/');
