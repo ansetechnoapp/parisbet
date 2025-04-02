@@ -49,21 +49,28 @@ export const useUserStore = create<UserState>()(
           set({ isLoading: true, error: null });
           const { data } = await supabase.auth.getSession();
           const user = data.session?.user || null;
-          
-          set({ 
-            user: user ? { 
-              id: user.id, 
-              isAdmin: isAdmin(user) 
-            } : null, 
-            isLoading: false, 
-            initialized: true 
-          });
 
-          // If there's a user, also load their profile
-          if (data.session?.user) {
+          if (user) {
+            const adminStatus = await isAdmin(user);
+            set({ 
+              user: { 
+                id: user.id, 
+                isAdmin: adminStatus 
+              }, 
+              isLoading: false, 
+              initialized: true 
+            });
+
+            // Load profile and transactions
             get().loadProfile();
             get().loadTransactions();
-          } 
+          } else {
+            set({ 
+              user: null, 
+              isLoading: false, 
+              initialized: true 
+            });
+          }
         } catch (error) {
           set({
             isLoading: false,
@@ -72,6 +79,7 @@ export const useUserStore = create<UserState>()(
           });
         }
       },
+
 
       loadProfile: async () => {
         const { user } = get();
