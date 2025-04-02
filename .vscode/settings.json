@@ -8,5 +8,9 @@
     "augment.nextEdit.showDiffInHover": false,
     "emmet.showAbbreviationSuggestions": true,
     "accessibility.verbosity.diffEditorActive": false,
-    "augment.conflictingCodingAssistantCheck": false
+    "augment.conflictingCodingAssistantCheck": false,
+    "codeium.enableCommandSideHintEducation": false,
+    "codeium.enableInComments": false,
+    "tabnine.completionsLoadingIndicatorEnabled": false,
+    "breadcrumbs.showNumbers": false
 }

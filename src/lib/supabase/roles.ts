@@ -21,7 +21,7 @@ export interface Permission {
 }
 
 export async function getUserRoles(userId: string) {
-  const cookieStore = cookies()
+  const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -54,12 +54,13 @@ export async function getUserRoles(userId: string) {
 
 export async function hasPermission(userId: string, permission: keyof Permission): Promise<boolean> {
   const roles = await getUserRoles(userId)
-  
+
   return roles.some((role: any) => {
     const permissions = role.permissions
     return permissions.includes('all') || permissions.includes(permission)
   })
 }
+
 
 export async function isAdmin(userId: string): Promise<boolean> {
   const roles = await getUserRoles(userId)

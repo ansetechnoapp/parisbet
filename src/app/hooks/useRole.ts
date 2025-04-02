@@ -7,6 +7,13 @@ export interface Role {
   permissions: string[];
 }
 
+interface RoleResponse {
+  roles: {
+    name: string;
+    permissions: string[];
+  }[];
+}
+
 export const useRole = () => {
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -42,10 +49,13 @@ export const useRole = () => {
         if (error) throw error;
 
         if (data) {
-          setRoles(data.map(item => ({
-            name: item.roles.name,
-            permissions: item.roles.permissions
-          })));
+          const rolesList = (data as unknown as RoleResponse[]).flatMap(item => 
+            item.roles.map(role => ({
+              name: role.name,
+              permissions: role.permissions
+            }))
+          );
+          setRoles(rolesList);
         }
       } catch (error) {
         console.error('Error fetching roles:', error);
@@ -95,4 +105,4 @@ export const useRole = () => {
     hasAnyPermission,
     hasAllPermissions
   };
-}; 
+};
