@@ -89,12 +89,28 @@ export const useAuth = () => {
     );
   };
 
+  // Calculate isAdmin status within useEffect instead of in the return statement
+  const [isAdminState, setIsAdminState] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (state.user) {
+        const adminStatus = await isAdmin(state.user);
+        setIsAdminState(adminStatus);
+      } else {
+        setIsAdminState(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [state.user]);
+
   return {
     user: state.user,
     roles: state.roles,
     loading: state.loading,
     error: state.error,
-    isAdmin: state.user ? await isAdmin(state.user) : false,
+    isAdmin: isAdminState,
     hasPermission,
     supabase
   };

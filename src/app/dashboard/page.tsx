@@ -1,3 +1,5 @@
+'use client';
+
 import RoleBasedComponent from '@/components/RoleBasedComponent'
 
 export default function DashboardPage() {
@@ -56,4 +58,4 @@ export default function DashboardPage() {
       </RoleBasedComponent>
     </div>
   )
-} 
+}

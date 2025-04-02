@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useUserStore } from '@/lib/store';
 import { toast } from 'sonner';
 
-export default function LoginPage() {
+// Wrapper component that uses searchParams
+function LoginForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -19,7 +20,7 @@ export default function LoginPage() {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
-    const { loadUser, user } = useUserStore();
+    const { loadUser } = useUserStore();
 
     // We don't need this useEffect anymore as the middleware will handle redirects
     // for authenticated users trying to access the login page
@@ -183,5 +184,14 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+// Main component that wraps LoginForm in a Suspense boundary
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginForm />
+        </Suspense>
     );
 }
